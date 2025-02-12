@@ -16,7 +16,9 @@
 <body>
     <header class="header">
         <nav class="nav">
-
+            <div class="logo-container">
+                <img src="images/tachesteaches.jpg" alt="TÂCHES Teaches" class="header-logo">
+            </div>
         </nav>
         <div class="header__content">
             <p class="event-dates">25-27 FEBRUARY 2025</p>
@@ -27,7 +29,9 @@
                     <span class="typed-text"></span><span class="cursor">|</span>
                 </div>
             </div>
-            <button class="generate-btn" onclick="document.getElementById('howdy').scrollIntoView({behavior: 'smooth'})">GENERATE SAMPLES</button>
+            <button class="generate-btn"
+                onclick="document.getElementById('howdy').scrollIntoView({behavior: 'smooth'})">GENERATE
+                SAMPLES</button>
         </div>
     </header>
 
@@ -292,6 +296,21 @@
                 <h2>FAQ</h2>
                 <div class="faq-item">
                     <div class="faq-question">
+                        <span>How is this different from other AI music courses?</span>
+                        <b class="arrow rotatable">></b>
+                    </div>
+                    <div class="faq-answer">
+                        <p>Every other course will teach basic AI tool usage with the promise of 'push-button' music creation - this is not
+                            that kind of course. There are no shortcuts or magic solutions here. This course is built on
+                            15 years of production experience and deep AI research, designed for serious
+                            producers who want to expand their creative possibilities. You'll learn sophisticated
+                            techniques for transforming AI-generated content into professional, emotionally resonant
+                            music while maintaining artistic integrity. This is about enhancing your existing production
+                            skills with AI, not replacing them.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
                         <span>What exactly will I learn in this course?</span>
                         <b class="arrow rotatable">></b>
                     </div>
@@ -348,34 +367,53 @@
             </div>
         </section>
 
+    </main>
 
-        <footer class="footer">
-            <div class="container">
-                <p> 2025 TÂCHES. All rights reserved.</p>
+    <footer class="sticky-footer">
+        <div class="countdown-container">
+            <div id="countdown" class="countdown">
+                <span class="countdown-prefix">EVENT BEGINS IN:</span>
+                <div class="countdown-item">
+                    <span id="days">00</span>
+                    <span class="label">d</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="hours">00</span>
+                    <span class="label">h</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="minutes">00</span>
+                    <span class="label">m</span>
+                </div>
+                <div class="countdown-item">
+                    <span id="seconds">00</span>
+                    <span class="label">s</span>
+                </div>
             </div>
-        </footer>
+        </div>
+    </footer>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function () {
-                const readMoreBtn = document.querySelector('.read-more-btn');
-                const readMoreContent = document.querySelector('.read-more-content');
-                const readMoreNote = document.querySelector('.read-more-note');
-                const readLessBtn = document.querySelector('.read-less-btn');
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const readMoreBtn = document.querySelector('.read-more-btn');
+            const readMoreContent = document.querySelector('.read-more-content');
+            const readMoreNote = document.querySelector('.read-more-note');
+            const readLessBtn = document.querySelector('.read-less-btn');
 
-                readMoreBtn.addEventListener('click', function () {
-                    readMoreContent.classList.toggle('hidden');
-                    readMoreNote.classList.add('hidden');
-                    readMoreBtn.textContent = readMoreContent.classList.contains('hidden') ? 'Read More' : 'Read Less';
-                });
-
-                readLessBtn.addEventListener('click', function () {
-                    readMoreContent.classList.toggle('hidden');
-                    readMoreNote.classList.remove('hidden');
-                    readMoreBtn.textContent = readMoreContent.classList.contains('hidden') ? 'Read More' : 'Read Less';
-                });
+            readMoreBtn.addEventListener('click', function () {
+                readMoreContent.classList.toggle('hidden');
+                readMoreNote.classList.add('hidden');
+                readMoreBtn.textContent = readMoreContent.classList.contains('hidden') ? 'Read More' : 'Read Less';
             });
-        </script>
-        <script src="script.js"></script>
+
+            readLessBtn.addEventListener('click', function () {
+                readMoreContent.classList.toggle('hidden');
+                readMoreNote.classList.remove('hidden');
+                readMoreBtn.textContent = readMoreContent.classList.contains('hidden') ? 'Read More' : 'Read Less';
+            });
+        });
+    </script>
+    <script src="script.js"></script>
 </body>
 
 </html>
