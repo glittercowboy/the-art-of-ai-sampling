@@ -85,9 +85,15 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   // Discount countdown timer
-  // Calculate the end time once when the page loads
-  const discountDuration = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
-  const discountEndTime = new Date(new Date().getTime() + discountDuration);
+  // Calculate the end time to 9 PM tonight
+  const today = new Date();
+  const discountEndTime = new Date(today);
+  discountEndTime.setHours(21, 0, 0, 0); // Set to 9 PM (21:00:00)
+
+  // If it's already past 9 PM, set to 9 PM tomorrow
+  if (today.getTime() > discountEndTime.getTime()) {
+    discountEndTime.setDate(discountEndTime.getDate() + 1);
+  }
 
   function updateDiscountCountdown() {
     // Get the current time
@@ -111,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-    // Update the countdown display
+    // Update the countdown display in both pricing section and footer
     document.getElementById("discount-hours").textContent = String(
       hours
     ).padStart(2, "0");
@@ -119,6 +125,17 @@ document.addEventListener("DOMContentLoaded", () => {
       minutes
     ).padStart(2, "0");
     document.getElementById("discount-seconds").textContent = String(
+      seconds
+    ).padStart(2, "0");
+
+    // Update footer countdown
+    document.getElementById("footer-hours").textContent = String(
+      hours
+    ).padStart(2, "0");
+    document.getElementById("footer-minutes").textContent = String(
+      minutes
+    ).padStart(2, "0");
+    document.getElementById("footer-seconds").textContent = String(
       seconds
     ).padStart(2, "0");
   }

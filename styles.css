@@ -283,7 +283,7 @@ p {
   display: flex;
   align-items: center;
   width: 600px;
-  max-width: 100%;
+  max-width: 90%;
   margin: 2rem auto;
   backdrop-filter: blur(5px);
 }
@@ -447,7 +447,7 @@ main {
   }
 
   h1 {
-    font-size: 4rem;
+    font-size: 3.5rem;
   }
 
   h2 {
@@ -461,6 +461,11 @@ main {
   .howdy-content,
   .philosophy-content > p {
     font-size: 1rem;
+  }
+
+  .search-bar {
+    width: 90%;
+    padding: 10px 20px;
   }
 }
 
@@ -728,6 +733,7 @@ main {
 
 .faq-content {
   width: 800px;
+  max-width: 90%;
   margin: 0 auto;
   font-size: 1.1rem;
   line-height: 1.8;
@@ -801,6 +807,7 @@ main {
 
 .who-content {
   width: 800px;
+  max-width: 90%;
   margin: 0 auto;
   font-size: 1.1rem;
   line-height: 1.8;
@@ -924,6 +931,10 @@ main {
   #who.section-short {
     padding: 2rem 1rem;
   }
+
+  .who-content {
+    width: 90%;
+  }
 }
 
 /* Quality Section */
@@ -948,6 +959,7 @@ main {
 
 .quality-content {
   width: 800px;
+  max-width: 90%;
   margin: 0 auto;
   position: relative;
   z-index: 2;
@@ -1016,6 +1028,10 @@ main {
   .quality-lists {
     flex-direction: column;
     gap: 2rem;
+  }
+
+  .faq-content {
+    width: 90%;
   }
 }
 
@@ -1403,10 +1419,46 @@ main {
   gap: 1.5rem;
 }
 
-.footer-content p {
+.footer-offer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.footer-offer p {
   color: rgba(255, 255, 255, 0.9);
   font-size: 1.1rem;
   margin: 0;
+  line-height: 1.2;
+}
+
+.footer-price {
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.footer-price s {
+  color: rgba(255, 255, 255, 0.6);
+  margin-right: 0.5rem;
+}
+
+.footer-countdown {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  font-family: var(--font-mono);
+  margin-top: 0.3rem;
+}
+
+.footer-countdown span {
+  display: inline-block;
+}
+
+#footer-hours,
+#footer-minutes,
+#footer-seconds {
+  color: var(--color-primary);
+  font-weight: bold;
+  margin: 0 0.1rem;
 }
 
 .footer-btn {
@@ -1435,8 +1487,16 @@ main {
     padding: 0.5rem 0;
   }
 
-  .footer-content p {
+  .footer-offer {
+    align-items: center;
+  }
+
+  .footer-offer p {
     font-size: 0.95rem;
+  }
+
+  .footer-countdown {
+    font-size: 0.85rem;
   }
 
   .footer-btn {
