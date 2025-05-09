@@ -84,5 +84,46 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // No countdown timer needed for the course page
+  // Discount countdown timer
+  // Calculate the end time once when the page loads
+  const discountDuration = 12 * 60 * 60 * 1000; // 12 hours in milliseconds
+  const discountEndTime = new Date(new Date().getTime() + discountDuration);
+
+  function updateDiscountCountdown() {
+    // Get the current time
+    const now = new Date();
+
+    // Calculate the remaining time
+    const diff = discountEndTime - now;
+
+    // If the countdown is over, show "Offer expired"
+    if (diff <= 0) {
+      document.querySelector(".discount-message").textContent =
+        "Offer expired!";
+      document.getElementById("discount-hours").textContent = "00";
+      document.getElementById("discount-minutes").textContent = "00";
+      document.getElementById("discount-seconds").textContent = "00";
+      return;
+    }
+
+    // Calculate hours, minutes, and seconds
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+
+    // Update the countdown display
+    document.getElementById("discount-hours").textContent = String(
+      hours
+    ).padStart(2, "0");
+    document.getElementById("discount-minutes").textContent = String(
+      minutes
+    ).padStart(2, "0");
+    document.getElementById("discount-seconds").textContent = String(
+      seconds
+    ).padStart(2, "0");
+  }
+
+  // Update discount countdown every second
+  setInterval(updateDiscountCountdown, 1000);
+  updateDiscountCountdown(); // Initial call
 });
