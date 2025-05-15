@@ -1166,40 +1166,7 @@ main {
   line-height: 1;
 }
 
-.discount-message {
-  font-size: 0.9rem;
-  color: #666;
-  margin-bottom: 0.5rem;
-}
-
-.discount-countdown {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 0.5rem;
-  font-family: var(--font-mono);
-}
-
-.discount-countdown .countdown-item {
-  display: flex;
-  align-items: center;
-  gap: 0.1rem;
-  background: rgba(0, 0, 0, 0.05);
-  padding: 0.2rem 0.5rem;
-  border-radius: 4px;
-}
-
-.discount-countdown .countdown-item span:first-child {
-  font-size: 1.2rem;
-  font-weight: 600;
-  color: #d43030;
-}
-
-.discount-countdown .countdown-item .label {
-  font-size: 0.9rem;
-  color: #666;
-  font-weight: 400;
-}
+/* Discount message and countdown timer styling removed */
 
 .price-features {
   margin: 1.5rem 0;
