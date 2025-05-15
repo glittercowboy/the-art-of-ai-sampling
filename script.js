@@ -84,63 +84,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // Discount countdown timer
-  // Calculate the end time to 9 PM tonight
-  const today = new Date();
-  const discountEndTime = new Date(today);
-  discountEndTime.setHours(21, 0, 0, 0); // Set to 9 PM (21:00:00)
+  // No discount countdown timer needed anymore
 
-  // If it's already past 9 PM, set to 9 PM tomorrow
-  if (today.getTime() > discountEndTime.getTime()) {
-    discountEndTime.setDate(discountEndTime.getDate() + 1);
-  }
-
-  function updateDiscountCountdown() {
-    // Get the current time
-    const now = new Date();
-
-    // Calculate the remaining time
-    const diff = discountEndTime - now;
-
-    // If the countdown is over, show "Offer expired"
-    if (diff <= 0) {
-      document.querySelector(".discount-message").textContent =
-        "Offer expired!";
-      document.getElementById("discount-hours").textContent = "00";
-      document.getElementById("discount-minutes").textContent = "00";
-      document.getElementById("discount-seconds").textContent = "00";
-      return;
-    }
-
-    // Calculate hours, minutes, and seconds
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-    // Update the countdown display in both pricing section and footer
-    document.getElementById("discount-hours").textContent = String(
-      hours
-    ).padStart(2, "0");
-    document.getElementById("discount-minutes").textContent = String(
-      minutes
-    ).padStart(2, "0");
-    document.getElementById("discount-seconds").textContent = String(
-      seconds
-    ).padStart(2, "0");
-
-    // Update footer countdown
-    document.getElementById("footer-hours").textContent = String(
-      hours
-    ).padStart(2, "0");
-    document.getElementById("footer-minutes").textContent = String(
-      minutes
-    ).padStart(2, "0");
-    document.getElementById("footer-seconds").textContent = String(
-      seconds
-    ).padStart(2, "0");
-  }
-
-  // Update discount countdown every second
-  setInterval(updateDiscountCountdown, 1000);
-  updateDiscountCountdown(); // Initial call
+  // Countdown timer functionality removed as the course is now at full price
 });
