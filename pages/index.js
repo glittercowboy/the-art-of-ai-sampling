@@ -2,6 +2,7 @@
 // ABOUTME: Includes course information, pricing, and checkout functionality
 
 import Head from 'next/head'
+import Script from 'next/script'
 import { useEffect, useState } from 'react'
 import StripeCheckout from '../components/StripeCheckout'
 
@@ -685,7 +686,8 @@ export default function Home() {
       </main>
 
       {/* Load script.js for typing animation */}
-      <script src="/script.js" async></script>
+      <Script src="/script.js" strategy="lazyOnload" />
+      
       
       {/* Stripe Checkout Modal */}
       <StripeCheckout 
