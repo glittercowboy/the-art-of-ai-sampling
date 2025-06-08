@@ -2,9 +2,12 @@
 // ABOUTME: Includes course information, pricing, and checkout functionality
 
 import Head from 'next/head'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+import StripeCheckout from '../components/StripeCheckout'
 
 export default function Home() {
+  const [showCheckout, setShowCheckout] = useState(false)
+  
   useEffect(() => {
     // Initialize Facebook tracking functions
     window.redirectWithTracking = function(url) {
@@ -113,9 +116,16 @@ export default function Home() {
   };
 
   const handleRegisterClick = () => {
-    if (window.redirectWithTracking) {
-      window.redirectWithTracking('https://taches-teaches.com/ai-sampling-checkout');
+    // Track checkout initiation
+    if (typeof fbq !== 'undefined') {
+      fbq('track', 'InitiateCheckout', {
+        content_name: 'The Art of AI Sampling Course',
+        value: 98.00,
+        currency: 'USD'
+      });
     }
+    
+    setShowCheckout(true);
   };
 
   return (
@@ -676,6 +686,12 @@ export default function Home() {
 
       {/* Load script.js for typing animation */}
       <script src="/script.js" async></script>
+      
+      {/* Stripe Checkout Modal */}
+      <StripeCheckout 
+        isVisible={showCheckout} 
+        onClose={() => setShowCheckout(false)} 
+      />
     </>
   )
 }

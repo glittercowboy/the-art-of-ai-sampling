@@ -13,6 +13,13 @@ jest.mock('next/head', () => {
   }
 })
 
+// Mock StripeCheckout component
+jest.mock('../components/StripeCheckout', () => {
+  return function StripeCheckout({ isVisible }) {
+    return isVisible ? <div>Complete Your Purchase</div> : null
+  }
+})
+
 // Mock window methods
 beforeEach(() => {
   // Mock fbq function
@@ -96,18 +103,19 @@ describe('Next.js Conversion Features', () => {
   test('should handle course registration button clicks', () => {
     render(<Home />)
     
-    // Mock the redirect function after component mounts (useEffect runs)
-    const mockRedirect = jest.fn()
-    global.window.redirectWithTracking = mockRedirect
-    
     const registerBtns = screen.getAllByText(/GET THE COURSE|ENROLL NOW/)
     
     fireEvent.click(registerBtns[0])
     
-    // Should call redirect function
-    expect(mockRedirect).toHaveBeenCalledWith(
-      'https://taches-teaches.com/ai-sampling-checkout'
-    )
+    // Should call Facebook tracking for checkout initiation
+    expect(global.fbq).toHaveBeenCalledWith('track', 'InitiateCheckout', {
+      content_name: 'The Art of AI Sampling Course',
+      value: 98.00,
+      currency: 'USD'
+    })
+    
+    // Should show checkout modal (StripeCheckout component)
+    expect(screen.getByText('Complete Your Purchase')).toBeInTheDocument()
   })
 
   test('should render all required images', () => {
