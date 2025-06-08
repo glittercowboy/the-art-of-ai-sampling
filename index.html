@@ -286,7 +286,7 @@
         <div class="register-button-container">
           <button
             class="register-btn"
-            onclick="fbq('track', 'InitiateCheckout'); window.location.href='https://taches-teaches.com/ai-sampling-checkout'"
+            onclick="redirectWithTracking('https://taches-teaches.com/ai-sampling-checkout')"
           >
             GET THE COURSE
           </button>
@@ -404,7 +404,7 @@
               </div>
               <button
                 class="enroll-btn"
-                onclick="fbq('track', 'InitiateCheckout'); window.location.href='https://taches-teaches.com/ai-sampling-checkout'"
+                onclick="redirectWithTracking('https://taches-teaches.com/ai-sampling-checkout')"
               >
                 ENROLL NOW
               </button>
@@ -574,6 +574,55 @@
         });
       });
     </script>
+    
+    <script>
+    // Cross-domain tracking function
+    function redirectWithTracking(url) {
+      // Get Facebook browser parameters
+      const fbp = getCookie('_fbp');
+      const fbc = getCookie('_fbc');
+      
+      // Get fbclid from current URL if it exists
+      const currentUrl = new URLSearchParams(window.location.search);
+      const fbclid = currentUrl.get('fbclid');
+      
+      // Build URL with parameters
+      let trackingUrl = url;
+      const params = new URLSearchParams();
+      
+      if (fbp) params.append('fbp', fbp);
+      if (fbc) params.append('fbc', fbc);
+      if (fbclid) params.append('fbclid', fbclid);
+      
+      // Add timestamp for cache busting
+      params.append('t', Date.now());
+      
+      if (params.toString()) {
+        trackingUrl += (url.includes('?') ? '&' : '?') + params.toString();
+      }
+      
+      // Track event before redirect
+      fbq('track', 'ViewContent', {
+        content_name: 'Checkout Page Click',
+        value: 98.00,
+        currency: 'USD'
+      });
+      
+      // Redirect after small delay to ensure event fires
+      setTimeout(() => {
+        window.location.href = trackingUrl;
+      }, 100);
+    }
+    
+    // Helper function to get cookies
+    function getCookie(name) {
+      const value = `; ${document.cookie}`;
+      const parts = value.split(`; ${name}=`);
+      if (parts.length === 2) return parts.pop().split(';').shift();
+      return null;
+    }
+    </script>
+    
     <script src="script.js"></script>
   </body>
 </html>

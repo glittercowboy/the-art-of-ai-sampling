@@ -4,13 +4,17 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repository contains a website for "The Art of AI Sampling with TÂCHES" - a landing page for a course about using AI tools for music production. The website is built with standard HTML, CSS, and JavaScript without any frameworks.
+This repository contains a website for "The Art of AI Sampling with TÂCHES" - a landing page for a course about using AI tools for music production. 
+
+**Current State**: Static website built with vanilla HTML, CSS, and JavaScript
+**Target State**: Next.js application with integrated Stripe checkout and Facebook CAPI tracking
 
 The main components are:
 - `index.html`: The single-page website structure
 - `styles.css`: All styling for the website
 - `script.js`: JavaScript for interactive elements (typing animation, FAQ accordion, etc.)
 - `/images/`: Directory containing all images used on the website
+- `plan.md`: Detailed implementation plan for Stripe integration project
 
 ## Website Architecture
 
@@ -26,9 +30,9 @@ The website follows a simple structure:
 
 ## Development Workflow
 
-### Local Development
+### Current Static Site (Pre-Migration)
 
-To view the website locally:
+To view the current static website locally:
 ```bash
 # Using Python's built-in HTTP server
 python -m http.server
@@ -39,9 +43,40 @@ npx http-server
 
 Then open http://localhost:8000 in your browser.
 
-### Web Hosting
+### Planned Next.js Application (Post-Migration)
 
-The website is designed to be hosted on a standard web server with no special requirements. All assets are contained within the repository.
+Once migrated to Next.js (see plan.md), development commands will be:
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Run tests
+npm test
+
+# Run specific test file
+npm test -- payment.test.js
+
+# Build for production
+npm run build
+
+# Run production build locally
+npm start
+```
+
+### Stripe Integration Testing
+
+For payment testing during development:
+```bash
+# Use Stripe CLI to forward webhooks to local development
+stripe listen --forward-to localhost:3000/api/stripe-webhook
+
+# Test with Stripe test card numbers
+# 4242424242424242 (Visa)
+# 4000000000000002 (Card declined)
+```
 
 ## Design Guidelines
 
@@ -95,3 +130,33 @@ Avoid:
 - High-pressure language
 - Artificial urgency
 - Unnecessary hype
+
+## Project Implementation Context
+
+This repository is transitioning from a static site to a Next.js application with integrated payments. See `plan.md` for the complete implementation roadmap.
+
+### Key Integration Requirements
+
+**Payment Processing**: 
+- Stripe Elements embedded on taches.ai domain (not redirected)
+- Single $98 payment for course access
+- Professional checkout UX replacing current GHL redirect
+
+**Tracking & Analytics**:
+- Facebook Pixel (browser-side) + Facebook CAPI (server-side)
+- Event deduplication to prevent double-counting
+- Target: >8.0 Event Match Quality score for ad optimization
+
+**CRM Integration**:
+- Webhook to GHL for automated course access
+- Direct HTTP POST to GHL inbound webhook URL
+- Retry logic for webhook reliability
+
+### Critical Architecture Decisions
+
+1. **Single-Domain Tracking**: Everything happens on taches.ai to eliminate cross-domain attribution issues
+2. **TDD Approach**: Every feature must have passing tests before implementation
+3. **Minimal Complexity**: Use simplest solutions that meet requirements
+4. **Production Ready**: Built for Facebook ad campaigns with reliable conversion tracking
+
+When working on this project, always reference `plan.md` for detailed implementation steps and maintain the established design aesthetic while adding new functionality.
