@@ -166,4 +166,103 @@ describe('Analytics Tracker - Client Side', () => {
     
     expect(payload.data.viewport).toEqual({ width: 1920, height: 1080 })
   })
+
+  describe('Click Tracking', () => {
+    it('should track checkout button clicks', async () => {
+      // Create a checkout button in the DOM
+      document.body.innerHTML = `
+        <button id="checkout-btn" class="checkout-button">
+          Start Course - $97
+        </button>
+      `
+      
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+      
+      // Mock click response
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      // Click the button
+      const button = document.getElementById('checkout-btn')
+      button.click()
+
+      // Wait for async tracking
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      // Verify click was tracked
+      expect(global.fetch).toHaveBeenCalledWith('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: expect.stringContaining('"event_type":"click"')
+      })
+
+      const [, options] = global.fetch.mock.calls[0]
+      const payload = JSON.parse(options.body)
+      
+      expect(payload.event_type).toBe('click')
+      expect(payload.data.element).toBe('checkout-button')
+      expect(payload.data.element_text).toBe('Start Course - $97')
+    })
+
+    it('should not track clicks on non-tracked elements', async () => {
+      // Create elements in the DOM
+      document.body.innerHTML = `
+        <button id="other-btn">Other Button</button>
+        <div id="random-div">Random Div</div>
+      `
+      
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+      
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+
+      // Click non-tracked elements
+      document.getElementById('other-btn').click()
+      document.getElementById('random-div').click()
+
+      // Wait a bit
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      // Should not have tracked any clicks
+      expect(global.fetch).not.toHaveBeenCalled()
+    })
+
+    it('should track manual click events', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      
+      // Manually track a click event
+      await tracker.trackEvent('click', {
+        element: 'custom-element',
+        value: 97
+      })
+
+      expect(global.fetch).toHaveBeenCalledWith('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: expect.stringContaining('"element":"custom-element"')
+      })
+    })
+  })
 })
