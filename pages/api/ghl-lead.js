@@ -26,7 +26,10 @@ export default async function handler(req, res) {
       })
     }
 
-    // Prepare payload for GoHighLevel (optimized format)
+    console.log('🎯 GHL Webhook URL:', ghlWebhookUrl)
+
+    // Prepare basic payload for GoHighLevel 
+    // (Keep it simple - only send standard contact fields)
     const nameParts = name.trim().split(' ')
     const firstName = nameParts[0] || ''
     const lastName = nameParts.slice(1).join(' ') || ''
@@ -35,39 +38,11 @@ export default async function handler(req, res) {
       firstName: firstName,
       lastName: lastName, 
       email: email,
-      phone: '', // We don't collect phone in checkout
-      source: 'Website - Art of AI Sampling',
-      tags: ['checkout-interest', 'art-of-ai-sampling', 'lead-magnet'],
-      customFields: [
-        {
-          key: 'lead_source',
-          value: lead_source || 'checkout_form'
-        },
-        {
-          key: 'lead_status', 
-          value: status || 'checkout_started'
-        },
-        {
-          key: 'potential_value',
-          value: '98'
-        },
-        {
-          key: 'course_interest',
-          value: 'The Art of AI Sampling with TÂCHES'
-        },
-        {
-          key: 'timestamp',
-          value: new Date().toISOString()
-        }
-      ],
-      // Additional GHL standard fields
-      dateAdded: new Date().toISOString(),
-      address1: '',
-      city: '',
-      state: '',
-      postalCode: '',
-      country: 'US'
+      phone: '', 
+      source: 'Website Checkout Interest'
     }
+
+    console.log('📤 Sending payload to GHL:', JSON.stringify(ghlPayload, null, 2))
 
     // Send to GoHighLevel
     const ghlResponse = await fetch(ghlWebhookUrl, {
@@ -78,12 +53,18 @@ export default async function handler(req, res) {
       body: JSON.stringify(ghlPayload)
     })
 
+    console.log('📨 GHL Response Status:', ghlResponse.status)
+    console.log('📨 GHL Response Headers:', Object.fromEntries(ghlResponse.headers.entries()))
+
     if (!ghlResponse.ok) {
       const errorText = await ghlResponse.text()
       console.error('❌ GHL webhook failed:', ghlResponse.status, errorText)
+      console.error('❌ Failed payload was:', JSON.stringify(ghlPayload, null, 2))
       throw new Error(`GHL webhook failed: ${ghlResponse.status}`)
     }
 
+    const responseText = await ghlResponse.text()
+    console.log('✅ GHL Response Body:', responseText)
     console.log('✅ Lead successfully sent to GoHighLevel')
     
     res.status(200).json({ 
