@@ -45,7 +45,17 @@ export default function CheckoutForm({ clientSecret, email, name }) {
   return (
     <form id="payment-form" onSubmit={handleSubmit}>
       <div className="payment-element-container">
-        <PaymentElement id="payment-element" />
+        <PaymentElement 
+          id="payment-element" 
+          options={{
+            layout: {
+              type: 'tabs',
+              defaultCollapsed: false,
+              radios: false,
+              spacedAccordionItems: false
+            }
+          }}
+        />
       </div>
       
       <div className="address-element-container">

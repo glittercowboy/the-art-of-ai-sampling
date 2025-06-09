@@ -125,6 +125,10 @@ export default function StripeCheckout({ isVisible, onClose }) {
   const options = {
     clientSecret,
     appearance,
+    layout: {
+      type: 'tabs',
+      defaultCollapsed: false,
+    }
   }
 
   return (
