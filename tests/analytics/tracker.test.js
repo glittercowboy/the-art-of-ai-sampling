@@ -264,5 +264,88 @@ describe('Analytics Tracker - Client Side', () => {
         body: expect.stringContaining('"element":"custom-element"')
       })
     })
+
+    it('should capture click coordinates', async () => {
+      // Create a checkout button in the DOM
+      document.body.innerHTML = `
+        <button id="checkout-btn" class="checkout-button">
+          Start Course - $97
+        </button>
+      `
+      
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+      
+      // Mock click response
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      // Create a mock click event with coordinates
+      const button = document.getElementById('checkout-btn')
+      const clickEvent = new MouseEvent('click', {
+        clientX: 100,
+        clientY: 200,
+        bubbles: true
+      })
+      
+      button.dispatchEvent(clickEvent)
+
+      // Wait for async tracking
+      await new Promise(resolve => setTimeout(resolve, 10))
+
+      const [, options] = global.fetch.mock.calls[0]
+      const payload = JSON.parse(options.body)
+      
+      expect(payload.data.coordinates).toEqual({ x: 100, y: 200 })
+    })
+
+    it('should debounce rapid clicks', async () => {
+      // Create a checkout button in the DOM
+      document.body.innerHTML = `
+        <button id="checkout-btn" class="checkout-button">
+          Start Course - $97
+        </button>
+      `
+      
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+      
+      // Mock click responses
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      const button = document.getElementById('checkout-btn')
+      
+      // Click rapidly 3 times
+      button.click()
+      button.click()
+      button.click()
+
+      // Wait for debounce period
+      await new Promise(resolve => setTimeout(resolve, 600))
+
+      // Should only have tracked one click due to debouncing
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+    })
   })
 })
