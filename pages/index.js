@@ -212,7 +212,11 @@ export default function Home() {
               lineHeight: "1",
             }}
           >
-            Learn how to use AI to expand your creative possibilities - <span style={{ textDecoration: "underline" }}>not replace them</span>.
+            Learn how to use AI to expand your creative possibilities -{" "}
+            <span style={{ textDecoration: "underline" }}>
+              not replace them
+            </span>
+            .
           </p>
           <hr
             style={{
@@ -236,7 +240,10 @@ export default function Home() {
               lineHeight: "1",
             }}
           >
-            A practical course for experienced<br className="br-mobile-only" /> producers<br className="br-desktop-only" />who want to push their boundaries.
+            A practical course for experienced
+            <br className="br-mobile-only" /> producers
+            <br className="br-desktop-only" />
+            who want to push their boundaries.
           </p>
 
           <button
@@ -254,7 +261,8 @@ export default function Home() {
               border: "none",
               borderRadius: "8px",
               cursor: "pointer",
-              boxShadow: "0 4px 15px rgba(230, 172, 85, 0.2), 0 2px 5px rgba(230, 172, 85, 0.15)",
+              boxShadow:
+                "0 4px 15px rgba(230, 172, 85, 0.2), 0 2px 5px rgba(230, 172, 85, 0.15)",
             }}
           >
             START LEARNING →
@@ -281,13 +289,12 @@ export default function Home() {
                 chopped, repitched, reversed, resampled, repurposed and
                 recombined many thousands of hours of audio in a myriad of weird
                 and wonderful ways and have (at the time of writing this)
-                officially released 117 songs. I&apos;ve released music on
+                officially released 124 songs. I&apos;ve released music on
                 labels like Anjunadeep, Get Physical, and Desert Hearts, been
                 featured in Vogue, Mixmag, and Billboard, and played headline
                 slots at major festivals and clubs around the world. I would
                 argue that I owe a significant portion of my success to the
-                wonders of
-                <b>sampling.</b>
+                wonders of <b>sampling.</b>
               </p>
 
               <p className="read-more-note">
@@ -330,7 +337,7 @@ export default function Home() {
                   another time and place. When you sample a funk record from
                   1970s Tehran, you&apos;re not just sampling a drum beat or a
                   bass-line. You&apos;re sampling the story behind the song and
-                  not just the sounds themselves. This adds a certain
+                  not just the sounds themselves. This adds a certain{" "}
                   <i>je-ne-sais-quoi</i> to a track that is difficult, if not
                   impossible, to capture by simply playing in the individual
                   parts today.
@@ -499,7 +506,7 @@ export default function Home() {
             <h2>OK. BUT WHAT&apos;S THE POINT?</h2>
 
             <p>
-              <span className="drop-cap">T</span>he point is that it&apos;s
+              <span className="drop-cap">T</span>he point is that it&apos;s{" "}
               <span className="rainbow-text">fun</span>. I am by no means
               suggesting we replace traditional music production with AI.
               I&apos;m just excited to show you how you can use AI to expand
@@ -533,16 +540,16 @@ export default function Home() {
             </ul>
 
             <p className="point-key">
-              I cannot reiterate enough:
+              I cannot reiterate enough:{" "}
               <b>
                 this is not about pushing a button and getting a finished track.
-              </b>
+              </b>{" "}
               It&apos;s about having another powerful tool in your creative
               arsenal that can generate unique starting points for your
               productions so that you can explore and discover and have some
               fucking fun. The real work still lies in your ability to curate,
               process, and arrange these elements into something meaningful and
-              emotionally resonant.
+              emotionally resonant.{" "}
               <u>
                 You need to be a skilled producer to get the most out of these
                 tools
@@ -593,7 +600,6 @@ export default function Home() {
                       </ul>
                     </li>
                     <li>Lifetime Access to Course Materials</li>
-                    <li>Regular Content Updates as AI Technology Evolves</li>
                   </ul>
                 </div>
                 <div className="bonus-features">

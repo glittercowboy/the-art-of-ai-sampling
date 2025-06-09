@@ -777,7 +777,7 @@ main {
 }
 
 .faq-answer.open {
-  max-height: 200px;
+  max-height: 500px;
   padding: 1rem 0;
 }
 
