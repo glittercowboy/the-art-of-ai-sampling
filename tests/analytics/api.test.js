@@ -30,4 +30,42 @@ describe('/api/analytics/track', () => {
     expect(res._getStatusCode()).toBe(200)
     expect(JSON.parse(res._getData())).toEqual({ success: true })
   })
+
+  it('should validate required fields in request body', async () => {
+    const { req, res } = createMocks({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: {
+        // Missing required fields
+        data: {}
+      }
+    })
+
+    await handler(req, res)
+    
+    expect(res._getStatusCode()).toBe(400)
+    expect(JSON.parse(res._getData())).toEqual({
+      error: 'Missing required fields: event_type, session_id'
+    })
+  })
+
+  it('should validate event_type is valid', async () => {
+    const { req, res } = createMocks({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: {
+        event_type: 'invalid_type',
+        timestamp: Date.now(),
+        session_id: 'test-session-123',
+        data: {}
+      }
+    })
+
+    await handler(req, res)
+    
+    expect(res._getStatusCode()).toBe(400)
+    expect(JSON.parse(res._getData())).toEqual({
+      error: 'Invalid event_type. Must be one of: pageview, click, scroll, engagement'
+    })
+  })
 })
