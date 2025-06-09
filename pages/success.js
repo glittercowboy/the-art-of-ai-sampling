@@ -20,7 +20,7 @@ export default function Success() {
           fbq('track', 'Purchase', {
             content_name: 'The Art of AI Sampling Course',
             content_ids: ['TACHES-AI-SAMPLING'],
-            value: 98.00,
+            value: 97.00,
             currency: 'USD',
             order_id: paymentIntent
           })
@@ -170,6 +170,8 @@ export default function Success() {
           color: #2d5016;
           margin-bottom: 16px;
           font-family: 'Poppins', sans-serif;
+          font-size: 32px;
+          font-weight: 600;
         }
         
         .next-steps {

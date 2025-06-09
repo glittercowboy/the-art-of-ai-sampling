@@ -84,7 +84,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
         <button className="close-btn" onClick={handleClose}>×</button>
         
         <h2>Complete Your Purchase</h2>
-        <p className="course-info">The Art of AI Sampling Course - $98</p>
+        <p className="course-info">The Art of AI Sampling Course - $97</p>
         
         {!showForm ? (
           <form onSubmit={handleEmailSubmit} className="email-form" data-testid="email-form">
@@ -148,13 +148,14 @@ export default function StripeCheckout({ isVisible, onClose }) {
         
         .checkout-modal {
           background: white;
-          padding: 32px;
-          border-radius: 12px;
-          max-width: 500px;
+          padding: 40px;
+          border-radius: 16px;
+          max-width: 640px;
           width: 100%;
           max-height: 90vh;
           overflow-y: auto;
           position: relative;
+          box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
         
         .close-btn {
@@ -183,6 +184,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
           color: #666;
           margin-bottom: 24px;
           font-size: 16px;
+          text-align: center;
         }
         
         .email-form {

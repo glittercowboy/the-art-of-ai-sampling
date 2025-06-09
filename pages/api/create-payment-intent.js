@@ -1,7 +1,7 @@
 // ABOUTME: API endpoint for creating Stripe payment intents
-// ABOUTME: Handles payment initialization for $98 course purchase
+// ABOUTME: Handles payment initialization for $97 course purchase
 
-import stripe from '../lib/stripe'
+import stripe from '../../lib/stripe'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 9800, // $98.00 in cents
+      amount: 9700, // $97.00 in cents
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true,
