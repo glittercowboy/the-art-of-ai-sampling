@@ -182,6 +182,14 @@ describe('Analytics Tracker - Client Side', () => {
   })
 
   describe('Click Tracking', () => {
+    beforeEach(() => {
+      // Ensure fetch is properly mocked for all click tests
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+    })
+
     it('should track checkout button clicks', async () => {
       // Create a checkout button in the DOM
       document.body.innerHTML = `
@@ -190,22 +198,12 @@ describe('Analytics Tracker - Client Side', () => {
         </button>
       `
       
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true })
-      })
-
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
       global.fetch.mockClear()
-      
-      // Mock click response
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true })
-      })
 
       // Click the button
       const button = document.getElementById('checkout-btn')
@@ -236,12 +234,8 @@ describe('Analytics Tracker - Client Side', () => {
         <div id="random-div">Random Div</div>
       `
       
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true })
-      })
-      
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
@@ -259,12 +253,8 @@ describe('Analytics Tracker - Client Side', () => {
     })
 
     it('should track manual click events', async () => {
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true })
-      })
-
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       
       // Manually track a click event
       await tracker.trackEvent('click', {
@@ -286,13 +276,9 @@ describe('Analytics Tracker - Client Side', () => {
           Start Course - $97
         </button>
       `
-      
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true })
-      })
 
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
@@ -330,13 +316,9 @@ describe('Analytics Tracker - Client Side', () => {
           Start Course - $97
         </button>
       `
-      
-      global.fetch.mockResolvedValueOnce({
-        ok: true,
-        json: async () => ({ success: true })
-      })
 
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
@@ -379,6 +361,12 @@ describe('Analytics Tracker - Client Side', () => {
         value: 800,
       })
       
+      // Ensure fetch is properly mocked for all scroll tests
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+      
       // Reset tracking state for each test
       if (typeof tracker !== 'undefined' && tracker.resetTracking) {
         tracker.resetTracking()
@@ -392,6 +380,7 @@ describe('Analytics Tracker - Client Side', () => {
       })
 
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
@@ -434,10 +423,17 @@ describe('Analytics Tracker - Client Side', () => {
       })
 
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
-      // Clear the pageview call
+      // Clear the pageview call AND any accumulated calls from previous tests
       global.fetch.mockClear()
+      
+      // Reset the mock to ensure clean slate
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
 
       // Simulate scrolling to each milestone
       const milestones = [
@@ -474,6 +470,7 @@ describe('Analytics Tracker - Client Side', () => {
       })
 
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
@@ -501,6 +498,7 @@ describe('Analytics Tracker - Client Side', () => {
       })
 
       tracker = require('../../lib/analytics-tracker')
+      tracker.resetTracking()
       await tracker.init()
 
       // Clear the pageview call
@@ -525,6 +523,180 @@ describe('Analytics Tracker - Client Side', () => {
 
       // Should only track the 25% milestone once
       expect(global.fetch).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Time on Page Tracking', () => {
+    beforeEach(() => {
+      // Mock Date.now for consistent timing
+      jest.useFakeTimers()
+      jest.setSystemTime(new Date('2024-01-01T00:00:00.000Z'))
+      
+      // Mock Page Visibility API
+      Object.defineProperty(document, 'hidden', {
+        writable: true,
+        value: false,
+      })
+      Object.defineProperty(document, 'visibilityState', {
+        writable: true,
+        value: 'visible',
+      })
+      
+      // Ensure fresh tracker state
+      if (typeof tracker !== 'undefined' && tracker.resetTracking) {
+        tracker.resetTracking()
+      }
+    })
+
+    afterEach(() => {
+      jest.useRealTimers()
+    })
+
+    it('should start time tracking on initialization', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      
+      // Initialize should start the timer
+      await tracker.init()
+      
+      // Advance time by 5 seconds
+      jest.advanceTimersByTime(5000)
+      
+      // Get current engagement time
+      const engagementTime = tracker.getEngagementTime()
+      expect(engagementTime).toBe(5000) // 5 seconds in milliseconds
+    })
+
+    it('should pause timing when tab becomes hidden', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+      
+      // Advance time by 3 seconds while visible
+      jest.advanceTimersByTime(3000)
+      
+      // Hide the tab
+      document.hidden = true
+      document.visibilityState = 'hidden'
+      const visibilityEvent = new Event('visibilitychange')
+      document.dispatchEvent(visibilityEvent)
+      
+      // Advance time by 2 seconds while hidden (should not count)
+      jest.advanceTimersByTime(2000)
+      
+      const engagementTime = tracker.getEngagementTime()
+      expect(engagementTime).toBe(3000) // Only the visible time counts
+    })
+
+    it('should resume timing when tab becomes visible again', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+      
+      // 2 seconds visible
+      jest.advanceTimersByTime(2000)
+      
+      // Hide tab
+      document.hidden = true
+      document.visibilityState = 'hidden'
+      document.dispatchEvent(new Event('visibilitychange'))
+      
+      // 3 seconds hidden (doesn't count)
+      jest.advanceTimersByTime(3000)
+      
+      // Show tab again
+      document.hidden = false
+      document.visibilityState = 'visible'
+      document.dispatchEvent(new Event('visibilitychange'))
+      
+      // 4 seconds visible again
+      jest.advanceTimersByTime(4000)
+      
+      const engagementTime = tracker.getEngagementTime()
+      expect(engagementTime).toBe(6000) // 2 + 4 seconds of visible time
+    })
+
+    it('should send engagement time on page unload', async () => {
+      // Mock navigator.sendBeacon to control the flow
+      const mockSendBeacon = jest.fn().mockReturnValue(true)
+      Object.defineProperty(navigator, 'sendBeacon', {
+        writable: true,
+        value: mockSendBeacon
+      })
+      
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      // Ensure clean state before starting
+      tracker.resetTracking()
+      await tracker.init()
+      
+      // Clear the pageview call
+      global.fetch.mockClear()
+      
+      // Verify initial engagement time is 0
+      expect(tracker.getEngagementTime()).toBe(0)
+      
+      // Spend 10 seconds on page
+      jest.advanceTimersByTime(10000)
+      
+      // Verify engagement time before unload
+      const engagementBeforeUnload = tracker.getEngagementTime()
+      expect(engagementBeforeUnload).toBe(10000)
+      
+      // Trigger page unload
+      const beforeUnloadEvent = new Event('beforeunload')
+      window.dispatchEvent(beforeUnloadEvent)
+      
+      // Wait for any async operations
+      await jest.runAllTimersAsync()
+      
+      // Should have used sendBeacon for reliability
+      expect(mockSendBeacon).toHaveBeenCalledWith('/api/analytics/track', expect.any(String))
+      
+      // Verify the payload sent via sendBeacon
+      const [, sentPayload] = mockSendBeacon.mock.calls[0]
+      const payload = JSON.parse(sentPayload)
+      
+      expect(payload.event_type).toBe('engagement')
+      expect(payload.data.duration).toBe(10000)
+    })
+
+    it('should handle missing Page Visibility API gracefully', async () => {
+      // Mock missing Page Visibility API
+      Object.defineProperty(document, 'hidden', {
+        writable: true,
+        value: undefined,
+      })
+      
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+      
+      // Should still track time even without visibility API
+      jest.advanceTimersByTime(5000)
+      
+      const engagementTime = tracker.getEngagementTime()
+      expect(engagementTime).toBe(5000)
     })
   })
 })
