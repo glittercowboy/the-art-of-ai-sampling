@@ -68,4 +68,48 @@ describe('/api/analytics/track', () => {
       error: 'Invalid event_type. Must be one of: pageview, click, scroll, engagement'
     })
   })
+
+  it('should return 405 for non-POST requests', async () => {
+    const { req, res } = createMocks({
+      method: 'GET',
+      headers: { 'content-type': 'application/json' }
+    })
+
+    await handler(req, res)
+    
+    expect(res._getStatusCode()).toBe(405)
+    expect(JSON.parse(res._getData())).toEqual({
+      error: 'Method not allowed'
+    })
+  })
+
+  it('should handle empty request body', async () => {
+    const { req, res } = createMocks({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: {}
+    })
+
+    await handler(req, res)
+    
+    expect(res._getStatusCode()).toBe(400)
+    expect(JSON.parse(res._getData())).toEqual({
+      error: 'Missing required fields: event_type, session_id'
+    })
+  })
+
+  it('should handle array body gracefully', async () => {
+    const { req, res } = createMocks({
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: ['not', 'an', 'object']
+    })
+
+    await handler(req, res)
+    
+    expect(res._getStatusCode()).toBe(400)
+    expect(JSON.parse(res._getData())).toEqual({
+      error: 'Invalid request body'
+    })
+  })
 })

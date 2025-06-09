@@ -12,7 +12,16 @@ export default async function handler(req, res) {
 
   const { body } = req
 
-  // Validate required fields
+  // Check for valid request body
+  if (body === null || body === undefined) {
+    return res.status(400).json({ error: 'Invalid request body' })
+  }
+
+  // Validate required fields - body could be array or non-object
+  if (typeof body !== 'object' || Array.isArray(body)) {
+    return res.status(400).json({ error: 'Invalid request body' })
+  }
+  
   const missingFields = REQUIRED_FIELDS.filter(field => !body[field])
   if (missingFields.length > 0) {
     return res.status(400).json({
