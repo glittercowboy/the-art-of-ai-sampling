@@ -107,6 +107,20 @@ export default function Home() {
           : "Read Less";
       });
     }
+
+    // Initialize analytics tracking
+    const initializeAnalytics = async () => {
+      try {
+        // Dynamically import the analytics tracker (client-side only)
+        const { init } = await import('../lib/analytics-tracker');
+        await init();
+      } catch (error) {
+        console.warn('Analytics initialization failed:', error);
+      }
+    };
+
+    // Initialize analytics after a short delay to ensure page is ready
+    setTimeout(initializeAnalytics, 100);
   }, []);
 
   const handleRegisterClick = () => {
