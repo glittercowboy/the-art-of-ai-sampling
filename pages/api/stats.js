@@ -49,7 +49,14 @@ async function processAnalyticsData(rawData) {
       todayPageviews,
       totalClicks,
       todayClicks,
-      totalEngagement,
+      totalEngagementMs,
+      engagementCount,
+      totalLeads,
+      todayLeads,
+      totalCheckoutForms,
+      todayCheckoutForms,
+      totalAbandoned,
+      todayAbandoned,
       scroll25,
       scroll50,
       scroll75,
@@ -59,7 +66,14 @@ async function processAnalyticsData(rawData) {
       getCounter(`analytics:pageviews:${today}`),
       getCounter('analytics:clicks:total'),
       getCounter(`analytics:clicks:${today}`),
-      getCounter('analytics:engagement:total'),
+      getCounter('analytics:engagement:total_ms'),
+      getCounter('analytics:engagement:count'),
+      getCounter('analytics:leads:total'),
+      getCounter(`analytics:leads:${today}`),
+      getCounter('analytics:checkout_forms:total'),
+      getCounter(`analytics:checkout_forms:${today}`),
+      getCounter('analytics:abandoned:total'),
+      getCounter(`analytics:abandoned:${today}`),
       getCounter('analytics:scroll:25'),
       getCounter('analytics:scroll:50'),
       getCounter('analytics:scroll:75'),
@@ -70,11 +84,13 @@ async function processAnalyticsData(rawData) {
     const sessionKeys = await getKeysByPattern('analytics:session:*')
     const uniqueVisitors = sessionKeys.length
 
-    // Calculate conversion rate (placeholder - would need purchase data)
-    const conversionRate = totalClicks > 0 ? (totalClicks * 0.03) : 0 // Mock 3% conversion
+    // Calculate conversion rates
+    const leadConversionRate = totalPageviews > 0 ? (totalLeads / totalPageviews) * 100 : 0
+    const checkoutConversionRate = totalLeads > 0 ? (totalCheckoutForms / totalLeads) * 100 : 0
+    const abandonmentRate = totalCheckoutForms > 0 ? (totalAbandoned / totalCheckoutForms) * 100 : 0
     
     // Calculate average time on page
-    const avgEngagementTime = totalPageviews > 0 ? totalEngagement / totalPageviews : 0
+    const avgEngagementTime = engagementCount > 0 ? totalEngagementMs / engagementCount : 0
 
     // Calculate scroll depth distribution
     const totalScrollEvents = scroll25 + scroll50 + scroll75 + scroll100
@@ -103,10 +119,25 @@ async function processAnalyticsData(rawData) {
         today: todayClicks,
         rate: totalPageviews > 0 ? (totalClicks / totalPageviews) * 100 : 0
       },
+      leads: {
+        total: totalLeads,
+        today: todayLeads,
+        conversionRate: leadConversionRate
+      },
+      checkoutForms: {
+        total: totalCheckoutForms,
+        today: todayCheckoutForms,
+        conversionRate: checkoutConversionRate
+      },
+      abandonment: {
+        total: totalAbandoned,
+        today: todayAbandoned,
+        rate: abandonmentRate
+      },
       conversions: {
-        total: Math.floor(conversionRate),
-        rate: totalClicks > 0 ? (conversionRate / totalClicks) * 100 : 0,
-        revenue: Math.floor(conversionRate) * 97 // $97 per conversion
+        total: 0, // This would come from actual purchase data
+        rate: 0,
+        revenue: 0
       },
       averageTime: Math.round(avgEngagementTime / 1000), // Convert to seconds
       scrollDepth: {

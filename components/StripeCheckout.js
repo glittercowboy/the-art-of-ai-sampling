@@ -28,6 +28,41 @@ export default function StripeCheckout({ isVisible, onClose }) {
     setError('')
 
     try {
+      // 🎯 Track lead capture - this is a HIGH VALUE event!
+      console.log('📧 Lead captured:', { name, email });
+      
+      try {
+        const { trackEvent } = await import('../lib/analytics-tracker');
+        await trackEvent('lead_capture', {
+          name,
+          email,
+          action: 'email_name_submitted',
+          lead_source: 'checkout_form',
+          value: 98 // Potential value
+        });
+        console.log('✅ Lead capture tracked');
+      } catch (analyticsError) {
+        console.warn('❌ Failed to track lead capture:', analyticsError);
+      }
+
+      // 🎯 Send lead to GoHighLevel CRM
+      try {
+        await fetch('/api/ghl-lead', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ 
+            name, 
+            email,
+            lead_source: 'checkout_interest',
+            status: 'checkout_started' 
+          }),
+        });
+        console.log('✅ Lead sent to GoHighLevel');
+      } catch (ghlError) {
+        console.warn('❌ Failed to send lead to GHL:', ghlError);
+        // Don't block checkout if GHL fails
+      }
+
       const response = await fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -42,6 +77,20 @@ export default function StripeCheckout({ isVisible, onClose }) {
 
       setClientSecret(data.clientSecret)
       setShowForm(true)
+      
+      // 🎯 Track checkout form shown (after lead capture)
+      try {
+        const { trackEvent } = await import('../lib/analytics-tracker');
+        await trackEvent('checkout_form_shown', {
+          name,
+          email,
+          action: 'payment_form_displayed'
+        });
+        console.log('✅ Checkout form display tracked');
+      } catch (analyticsError) {
+        console.warn('❌ Failed to track checkout form display:', analyticsError);
+      }
+      
     } catch (err) {
       setError(err.message)
     } finally {

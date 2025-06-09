@@ -123,8 +123,24 @@ export default function Home() {
     setTimeout(initializeAnalytics, 100);
   }, []);
 
-  const handleRegisterClick = () => {
-    // Track checkout initiation
+  const handleRegisterClick = async () => {
+    console.log('🎯 CTA Button clicked - opening payment form');
+    
+    // Track payment form opening with our analytics
+    try {
+      const { trackEvent } = await import('../lib/analytics-tracker');
+      await trackEvent('click', {
+        element: 'cta-payment-form',
+        element_text: 'Start Course - $98',
+        action: 'payment_form_open',
+        value: 98
+      });
+      console.log('✅ Payment form open tracked');
+    } catch (error) {
+      console.warn('❌ Failed to track payment form open:', error);
+    }
+
+    // Track checkout initiation with Facebook
     if (typeof fbq !== "undefined") {
       fbq("track", "InitiateCheckout", {
         content_name: "The Art of AI Sampling Course",
