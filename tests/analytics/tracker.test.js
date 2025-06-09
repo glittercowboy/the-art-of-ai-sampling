@@ -70,6 +70,100 @@ describe('Analytics Tracker - Client Side', () => {
     expect(payload.session_id).toEqual(expect.any(String))
     expect(payload.page_url).toBe('https://taches.ai/')
     expect(payload.referrer).toBe('https://google.com')
-    expect(payload.data).toEqual({})
+    expect(payload.data.viewport).toEqual({ width: 1024, height: 768 }) // jsdom defaults
+  })
+
+  it('should generate unique session IDs', () => {
+    tracker = require('../../lib/analytics-tracker')
+    
+    const sessionId1 = tracker.getSessionId()
+    const sessionId2 = tracker.getSessionId()
+    
+    // Same call should return same ID
+    expect(sessionId1).toBe(sessionId2)
+    expect(sessionId1).toMatch(/^session_\d+_[a-z0-9]+$/)
+    
+    // Verify it was stored in sessionStorage
+    expect(window.sessionStorage.setItem).toHaveBeenCalledWith('analytics_session_id', sessionId1)
+  })
+
+  it('should reuse existing session ID from sessionStorage', () => {
+    const existingId = 'session_123_existing'
+    window.sessionStorage.getItem.mockReturnValue(existingId)
+    
+    tracker = require('../../lib/analytics-tracker')
+    
+    const sessionId = tracker.getSessionId()
+    expect(sessionId).toBe(existingId)
+    expect(window.sessionStorage.getItem).toHaveBeenCalledWith('analytics_session_id')
+  })
+
+  it('should handle missing sessionStorage gracefully', () => {
+    // Remove sessionStorage
+    delete window.sessionStorage
+    
+    tracker = require('../../lib/analytics-tracker')
+    
+    const sessionId = tracker.getSessionId()
+    expect(sessionId).toMatch(/^session_\d+_[a-z0-9]+$/)
+  })
+
+  it('should extract UTM parameters from URL', async () => {
+    // Set URL with UTM parameters
+    window.location.search = '?utm_source=facebook&utm_medium=cpc&utm_campaign=course_launch&utm_content=video_ad'
+    
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true })
+    })
+    
+    tracker = require('../../lib/analytics-tracker')
+    await tracker.init()
+    
+    const [, options] = global.fetch.mock.calls[0]
+    const payload = JSON.parse(options.body)
+    
+    expect(payload.data.utm_source).toBe('facebook')
+    expect(payload.data.utm_medium).toBe('cpc')
+    expect(payload.data.utm_campaign).toBe('course_launch')
+    expect(payload.data.utm_content).toBe('video_ad')
+  })
+
+  it('should handle URLs without UTM parameters', async () => {
+    window.location.search = ''
+    
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true })
+    })
+    
+    tracker = require('../../lib/analytics-tracker')
+    await tracker.init()
+    
+    const [, options] = global.fetch.mock.calls[0]
+    const payload = JSON.parse(options.body)
+    
+    // Should still have viewport but no UTM params
+    expect(payload.data.viewport).toEqual({ width: 1024, height: 768 })
+    expect(payload.data.utm_source).toBeUndefined()
+  })
+
+  it('should capture viewport dimensions', async () => {
+    // Mock window dimensions
+    Object.defineProperty(window, 'innerWidth', { value: 1920, writable: true })
+    Object.defineProperty(window, 'innerHeight', { value: 1080, writable: true })
+    
+    global.fetch.mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ success: true })
+    })
+    
+    tracker = require('../../lib/analytics-tracker')
+    await tracker.init()
+    
+    const [, options] = global.fetch.mock.calls[0]
+    const payload = JSON.parse(options.body)
+    
+    expect(payload.data.viewport).toEqual({ width: 1920, height: 1080 })
   })
 })
