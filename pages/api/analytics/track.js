@@ -39,7 +39,7 @@ export default async function handler(req, res) {
 
   try {
     // Import storage functions
-    const { incrementCounter, setSessionData } = require('../../lib/analytics-storage')
+    const { incrementCounter, setSessionData, getCounter, setCounter } = require('../../../lib/analytics-storage')
     
     const { event_type, session_id, timestamp, data } = body
     const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD format
@@ -73,8 +73,8 @@ export default async function handler(req, res) {
           // Since incrementCounter only increments by 1, we'll store individual sessions
           await incrementCounter('analytics:engagement:count')
           // Store the duration in a separate key for later calculation
-          const currentTotal = await require('../../lib/analytics-storage').getCounter('analytics:engagement:total_ms') || 0
-          await require('../../lib/analytics-storage').setCounter('analytics:engagement:total_ms', currentTotal + data.duration)
+          const currentTotal = await getCounter('analytics:engagement:total_ms') || 0
+          await setCounter('analytics:engagement:total_ms', currentTotal + data.duration)
           console.log(`⏱️ Engagement time added: ${data.duration}ms`)
         }
         break
