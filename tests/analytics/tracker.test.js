@@ -13,6 +13,20 @@ describe('Analytics Tracker - Client Side', () => {
     jest.resetModules()
     jest.clearAllMocks()
     
+    // Clean up DOM
+    document.body.innerHTML = ''
+    
+    // Remove event listeners (prevent accumulation across tests)
+    const events = ['click', 'scroll']
+    events.forEach(event => {
+      // Remove all listeners by replacing the elements
+      const newDocument = document.implementation.createHTMLDocument()
+      const newWindow = { ...window }
+      
+      // Don't actually replace, just clear handlers
+      jest.clearAllMocks()
+    })
+    
     // Mock fetch for API calls
     global.fetch = jest.fn()
     
@@ -345,6 +359,171 @@ describe('Analytics Tracker - Client Side', () => {
       await new Promise(resolve => setTimeout(resolve, 600))
 
       // Should only have tracked one click due to debouncing
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('Scroll Depth Tracking', () => {
+    beforeEach(() => {
+      // Mock document scroll properties
+      Object.defineProperty(document.documentElement, 'scrollTop', {
+        writable: true,
+        value: 0,
+      })
+      Object.defineProperty(document.documentElement, 'scrollHeight', {
+        writable: true,
+        value: 2000,
+      })
+      Object.defineProperty(document.documentElement, 'clientHeight', {
+        writable: true,
+        value: 800,
+      })
+      
+      // Reset tracking state for each test
+      if (typeof tracker !== 'undefined' && tracker.resetTracking) {
+        tracker.resetTracking()
+      }
+    })
+
+    it('should track 25% scroll depth', async () => {
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+      
+      // Mock scroll response
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      // Simulate scroll to 25% (300px of 1200px scrollable)
+      document.documentElement.scrollTop = 300
+      
+      // Trigger scroll event
+      const scrollEvent = new Event('scroll')
+      window.dispatchEvent(scrollEvent)
+
+      // Wait for throttled tracking
+      await new Promise(resolve => setTimeout(resolve, 50))
+
+      // Verify scroll event was tracked
+      expect(global.fetch).toHaveBeenCalledWith('/api/analytics/track', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: expect.stringContaining('"event_type":"scroll"')
+      })
+
+      const [, options] = global.fetch.mock.calls[0]
+      const payload = JSON.parse(options.body)
+      
+      expect(payload.event_type).toBe('scroll')
+      expect(payload.data.depth).toBe(25)
+    })
+
+    it('should track all scroll milestones', async () => {
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+
+      // Simulate scrolling to each milestone
+      const milestones = [
+        { scrollTop: 300, expectedDepth: 25 },   // 25%
+        { scrollTop: 600, expectedDepth: 50 },   // 50%
+        { scrollTop: 900, expectedDepth: 75 },   // 75%
+        { scrollTop: 1200, expectedDepth: 100 }  // 100%
+      ]
+
+      for (const milestone of milestones) {
+        document.documentElement.scrollTop = milestone.scrollTop
+        const scrollEvent = new Event('scroll')
+        window.dispatchEvent(scrollEvent)
+        
+        // Wait for throttling
+        await new Promise(resolve => setTimeout(resolve, 1100))
+      }
+
+      // Should have tracked 4 scroll events
+      expect(global.fetch).toHaveBeenCalledTimes(4)
+      
+      // Verify each milestone was tracked correctly
+      milestones.forEach((milestone, index) => {
+        const [, options] = global.fetch.mock.calls[index]
+        const payload = JSON.parse(options.body)
+        expect(payload.data.depth).toBe(milestone.expectedDepth)
+      })
+    })
+
+    it('should throttle rapid scroll events', async () => {
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+
+      // Rapidly scroll multiple times to 25% milestone
+      for (let i = 0; i < 5; i++) {
+        document.documentElement.scrollTop = 300  // Consistent 25% milestone
+        const scrollEvent = new Event('scroll')
+        window.dispatchEvent(scrollEvent)
+        await new Promise(resolve => setTimeout(resolve, 100))
+      }
+
+      // Wait for throttle period
+      await new Promise(resolve => setTimeout(resolve, 1200))
+
+      // Should only have tracked one event due to throttling
+      expect(global.fetch).toHaveBeenCalledTimes(1)
+    })
+
+    it('should not track same milestone twice', async () => {
+      global.fetch.mockResolvedValue({
+        ok: true,
+        json: async () => ({ success: true })
+      })
+
+      tracker = require('../../lib/analytics-tracker')
+      await tracker.init()
+
+      // Clear the pageview call
+      global.fetch.mockClear()
+
+      // Scroll to 25% twice
+      document.documentElement.scrollTop = 300
+      window.dispatchEvent(new Event('scroll'))
+      
+      await new Promise(resolve => setTimeout(resolve, 1100))
+      
+      // Scroll back and forth in same milestone
+      document.documentElement.scrollTop = 250
+      window.dispatchEvent(new Event('scroll'))
+      
+      await new Promise(resolve => setTimeout(resolve, 1100))
+      
+      document.documentElement.scrollTop = 320
+      window.dispatchEvent(new Event('scroll'))
+      
+      await new Promise(resolve => setTimeout(resolve, 1100))
+
+      // Should only track the 25% milestone once
       expect(global.fetch).toHaveBeenCalledTimes(1)
     })
   })
