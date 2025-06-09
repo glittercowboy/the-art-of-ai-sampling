@@ -6,6 +6,7 @@ describe('Analytics Storage - Vercel KV', () => {
 
   beforeEach(() => {
     jest.clearAllMocks()
+    jest.resetModules() // Reset module cache to get fresh instance
     // This will fail until we create the storage module
     storage = require('../../lib/analytics-storage')
   })
@@ -33,5 +34,24 @@ describe('Analytics Storage - Vercel KV', () => {
     // Restore env vars
     process.env.KV_REST_API_URL = originalUrl
     process.env.KV_REST_API_TOKEN = originalToken
+  })
+
+  it('should increment a counter atomically', async () => {
+    const result = await storage.incrementCounter('analytics:pageviews:today')
+    expect(result).toBe(1)
+  })
+
+  it('should read counter values', async () => {
+    // First increment a counter
+    await storage.incrementCounter('analytics:unique:today')
+    
+    // Then read it
+    const value = await storage.getCounter('analytics:unique:today')
+    expect(value).toBe(1)
+  })
+
+  it('should return 0 for non-existent counters', async () => {
+    const value = await storage.getCounter('analytics:nonexistent:counter')
+    expect(value).toBe(0)
   })
 })
