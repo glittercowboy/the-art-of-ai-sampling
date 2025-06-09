@@ -26,20 +26,47 @@ export default async function handler(req, res) {
       })
     }
 
-    // Prepare payload for GoHighLevel
+    // Prepare payload for GoHighLevel (optimized format)
+    const nameParts = name.trim().split(' ')
+    const firstName = nameParts[0] || ''
+    const lastName = nameParts.slice(1).join(' ') || ''
+    
     const ghlPayload = {
-      firstName: name.split(' ')[0],
-      lastName: name.split(' ').slice(1).join(' ') || '',
+      firstName: firstName,
+      lastName: lastName, 
       email: email,
       phone: '', // We don't collect phone in checkout
-      source: lead_source || 'website_checkout',
-      tags: ['checkout_interest', 'art_of_ai_sampling'],
-      customFields: {
-        leadSource: lead_source,
-        leadStatus: status,
-        leadValue: '98',
-        timestamp: new Date().toISOString()
-      }
+      source: 'Website - Art of AI Sampling',
+      tags: ['checkout-interest', 'art-of-ai-sampling', 'lead-magnet'],
+      customFields: [
+        {
+          key: 'lead_source',
+          value: lead_source || 'checkout_form'
+        },
+        {
+          key: 'lead_status', 
+          value: status || 'checkout_started'
+        },
+        {
+          key: 'potential_value',
+          value: '98'
+        },
+        {
+          key: 'course_interest',
+          value: 'The Art of AI Sampling with TÂCHES'
+        },
+        {
+          key: 'timestamp',
+          value: new Date().toISOString()
+        }
+      ],
+      // Additional GHL standard fields
+      dateAdded: new Date().toISOString(),
+      address1: '',
+      city: '',
+      state: '',
+      postalCode: '',
+      country: 'US'
     }
 
     // Send to GoHighLevel
