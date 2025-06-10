@@ -399,7 +399,7 @@ p {
 }
 
 main {
-  padding-bottom: 3rem;
+  padding-bottom: 6rem; /* Extra padding for sticky sale banner */
 }
 
 /* Drop Cap */

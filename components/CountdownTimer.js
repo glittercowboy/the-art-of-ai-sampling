@@ -132,6 +132,42 @@ export default function CountdownTimer({ onExpire, className }) {
             min-width: 35px;
           }
         }
+        
+        /* Compact styles for banner */
+        .countdown-timer.countdown-compact {
+          margin: 0;
+        }
+        
+        .countdown-compact .countdown-label {
+          font-size: 0.8rem;
+          margin-bottom: 2px;
+          color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .countdown-compact .countdown-number {
+          font-size: 1.3rem;
+          color: white;
+        }
+        
+        .countdown-compact .countdown-text {
+          font-size: 0.7rem;
+          color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .countdown-compact .countdown-separator {
+          color: white;
+          font-size: 1.1rem;
+        }
+        
+        @media (max-width: 768px) {
+          .countdown-compact .countdown-number {
+            font-size: 1.1rem;
+          }
+          
+          .countdown-compact .countdown-separator {
+            font-size: 1rem;
+          }
+        }
       `}</style>
     </div>
   )

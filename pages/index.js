@@ -6,6 +6,7 @@ import Script from "next/script";
 import { useEffect, useState, useRef } from "react";
 import StripeCheckout from "../components/StripeCheckout";
 import CountdownTimer from "../components/CountdownTimer";
+import SaleBanner from "../components/SaleBanner";
 import { logger } from '../lib/logger';
 import { getCurrentPricing, isSaleActive } from '../lib/sale-config';
 
@@ -822,6 +823,9 @@ export default function Home() {
 
       {/* Load script.js for typing animation */}
       <Script src="/script.js" strategy="lazyOnload" />
+
+      {/* Sale Banner */}
+      <SaleBanner onCtaClick={handleRegisterClick} />
 
       {/* Stripe Checkout Modal */}
       <StripeCheckout
