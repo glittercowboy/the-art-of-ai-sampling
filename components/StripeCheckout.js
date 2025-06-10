@@ -6,6 +6,7 @@ import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from './CheckoutForm'
 import { logger } from '../lib/logger'
+import { getCurrentPricing } from '../lib/sale-config'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
@@ -13,9 +14,17 @@ export default function StripeCheckout({ isVisible, onClose }) {
   const [clientSecret, setClientSecret] = useState('')
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
+  const [pricing, setPricing] = useState(null)
   const [isLoading, setIsLoading] = useState(false)
   const [showForm, setShowForm] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    if (isVisible) {
+      const currentPricing = getCurrentPricing()
+      setPricing(currentPricing)
+    }
+  }, [isVisible])
 
   const handleEmailSubmit = async (e) => {
     e.preventDefault()
@@ -39,7 +48,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
           email,
           action: 'email_name_submitted',
           lead_source: 'checkout_form',
-          value: 47 // Potential value
+          value: pricing?.price || 97 // Potential value
         });
         logger.dev('✅ Lead capture tracked');
       } catch (analyticsError) {
@@ -138,7 +147,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
         <button className="close-btn" onClick={handleClose}>×</button>
         
         <h2>Complete Your Purchase</h2>
-        <p className="course-info">The Art of AI Sampling Course - $47</p>
+        <p className="course-info">The Art of AI Sampling Course - ${pricing?.price || 97}{pricing?.isOnSale ? ` (Save $${pricing.savings}!)` : ''}</p>
         
         {!showForm ? (
           <form onSubmit={handleEmailSubmit} className="email-form" data-testid="email-form">

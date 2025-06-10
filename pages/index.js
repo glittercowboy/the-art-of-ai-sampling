@@ -5,12 +5,21 @@ import Head from "next/head";
 import Script from "next/script";
 import { useEffect, useState, useRef } from "react";
 import StripeCheckout from "../components/StripeCheckout";
+import CountdownTimer from "../components/CountdownTimer";
 import { logger } from '../lib/logger';
+import { getCurrentPricing, isSaleActive } from '../lib/sale-config';
 
 export default function Home() {
   const [showCheckout, setShowCheckout] = useState(false);
+  const [pricing, setPricing] = useState(null);
+  const [saleActive, setSaleActive] = useState(false);
 
   useEffect(() => {
+    // Get initial pricing
+    const currentPricing = getCurrentPricing();
+    setPricing(currentPricing);
+    setSaleActive(isSaleActive());
+
     // Initialize Facebook tracking functions
     window.redirectWithTracking = function (url) {
       // Get Facebook browser parameters
@@ -40,7 +49,7 @@ export default function Home() {
       if (typeof fbq !== "undefined") {
         fbq("track", "ViewContent", {
           content_name: "Checkout Page Click",
-          value: 47.0,
+          value: pricing?.price || 97,
           currency: "USD",
         });
       }
@@ -124,6 +133,13 @@ export default function Home() {
     setTimeout(initializeAnalytics, 100);
   }, []);
 
+  const handleCountdownExpire = () => {
+    // Update pricing when countdown expires
+    const newPricing = getCurrentPricing();
+    setPricing(newPricing);
+    setSaleActive(isSaleActive());
+  };
+
   const handleRegisterClick = async () => {
     logger.dev('🎯 CTA Button clicked - opening payment form');
     
@@ -132,9 +148,9 @@ export default function Home() {
       const { trackEvent } = await import('../lib/analytics-tracker');
       await trackEvent('click', {
         element: 'cta-payment-form',
-        element_text: 'Start Course - $47',
+        element_text: `Start Course - $${pricing?.price || 97}`,
         action: 'payment_form_open',
-        value: 47
+        value: pricing?.price || 97
       });
       logger.dev('✅ Payment form open tracked');
     } catch (error) {
@@ -145,7 +161,7 @@ export default function Home() {
     if (typeof fbq !== "undefined") {
       fbq("track", "InitiateCheckout", {
         content_name: "The Art of AI Sampling Course",
-        value: 47.0,
+        value: pricing?.price || 97,
         currency: "USD",
       });
     }
@@ -594,19 +610,28 @@ export default function Home() {
         <section id="pricing" className="section">
           <div className="container">
             <div className="pricing-box">
-              <div className="sale-badge">🌞 SUMMER SALE - LIMITED TIME</div>
+              {saleActive && pricing?.sale && (
+                <>
+                  <div className="sale-badge">{pricing.sale.emoji} {pricing.sale.name.toUpperCase()} - LIMITED TIME</div>
+                  <CountdownTimer onExpire={handleCountdownExpire} />
+                </>
+              )}
               <h2>JOIN THE COURSE</h2>
               <div className="pricing-content">
                 <div className="price-tag">
-                  <div className="original-price">
-                    <span className="currency">$</span>
-                    <span className="amount">97</span>
-                  </div>
+                  {saleActive && pricing?.isOnSale && (
+                    <div className="original-price">
+                      <span className="currency">$</span>
+                      <span className="amount">{pricing.originalPrice}</span>
+                    </div>
+                  )}
                   <div className="price">
                     <span className="currency">$</span>
-                    <span className="amount">47</span>
+                    <span className="amount">{pricing?.price || 97}</span>
                   </div>
-                  <div className="savings">Save $50!</div>
+                  {saleActive && pricing?.isOnSale && (
+                    <div className="savings">Save ${pricing.savings}!</div>
+                  )}
                 </div>
                 <div className="price-features">
                   <h3>What&apos;s Included:</h3>

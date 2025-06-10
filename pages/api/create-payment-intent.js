@@ -1,7 +1,8 @@
 // ABOUTME: API endpoint for creating Stripe payment intents
-// ABOUTME: Handles payment initialization for $97 course purchase
+// ABOUTME: Handles payment initialization with dynamic pricing based on active sales
 
 import stripe from '../../lib/stripe'
+import { getCurrentPricing } from '../../lib/sale-config'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -15,8 +16,12 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get current pricing (dynamic based on active sales)
+    const pricing = getCurrentPricing()
+    
+    // Create payment intent with current pricing
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 4700, // $47.00 in cents (Summer Sale - originally $97)
+      amount: pricing.price * 100, // Convert to cents
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true,
@@ -25,9 +30,14 @@ export default async function handler(req, res) {
         email,
         name,
         product: 'The Art of AI Sampling Course',
-        sale_type: 'summer_sale',
-        original_price: '97.00',
-        sale_price: '47.00'
+        price_paid: pricing.price.toString(),
+        stripe_price_id: pricing.stripePriceId,
+        is_on_sale: pricing.isOnSale.toString(),
+        ...(pricing.isOnSale && {
+          sale_type: pricing.sale.id,
+          original_price: pricing.originalPrice.toString(),
+          savings: pricing.savings.toString()
+        })
       }
     })
 
