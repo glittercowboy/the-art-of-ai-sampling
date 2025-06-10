@@ -235,7 +235,7 @@ export default function Home() {
             style={{
               fontFamily: "'Poppins', sans-serif",
               marginTop: "0",
-              fontSize: "clamp(3.5rem, 7.5vw, 5.5rem)",
+              fontSize: "clamp(2.5rem, 7.5vw, 5.5rem)",
               marginBottom: "2rem",
               lineHeight: "0.9",
               fontWeight: "600",
@@ -315,6 +315,22 @@ export default function Home() {
           </button>
         </div>
       </header>
+
+      <section className="testimonial-section">
+        <div className="container">
+          <div className="testimonial-content">
+            <blockquote className="testimonial-quote">
+              "I had a lot of fun with this course. It's a wild use of bleeding-edge music tech that flips the old paradigm of sampling on its head. It opened my mind to new possibilities. What else can you ask for?"
+            </blockquote>
+            <cite className="testimonial-author">— Boreta, The Glitch Mob</cite>
+            <img 
+              src="https://miro.medium.com/v2/resize:fit:2400/1*c1ARfLwwo5K9Tho1UQcaFQ.jpeg" 
+              alt="Boreta from The Glitch Mob"
+              className="testimonial-image"
+            />
+          </div>
+        </div>
+      </section>
 
       <main>
         <section id="howdy" className="section">
