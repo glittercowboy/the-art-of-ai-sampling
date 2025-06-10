@@ -16,7 +16,7 @@ export default async function handler(req, res) {
 
   try {
     const paymentIntent = await stripe.paymentIntents.create({
-      amount: 9700, // $97.00 in cents
+      amount: 4700, // $47.00 in cents (Summer Sale - originally $97)
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true,
@@ -24,7 +24,10 @@ export default async function handler(req, res) {
       metadata: {
         email,
         name,
-        product: 'The Art of AI Sampling Course'
+        product: 'The Art of AI Sampling Course',
+        sale_type: 'summer_sale',
+        original_price: '97.00',
+        sale_price: '47.00'
       }
     })
 
