@@ -147,7 +147,20 @@ export default function StripeCheckout({ isVisible, onClose }) {
         <button className="close-btn" onClick={handleClose}>×</button>
         
         <h2>Complete Your Purchase</h2>
-        <p className="course-info">The Art of AI Sampling Course - ${pricing?.price || 97}{pricing?.isOnSale ? ` (Save $${pricing.savings}!)` : ''}</p>
+        <div className="course-info">
+          <div className="course-title">The Art of AI Sampling Course</div>
+          <div className="pricing-display">
+            {pricing?.isOnSale ? (
+              <>
+                <span className="original-price-checkout">${pricing.originalPrice}</span>
+                <span className="sale-price-checkout">${pricing.price}</span>
+                <span className="savings-badge">(Save ${pricing.savings}!)</span>
+              </>
+            ) : (
+              <span className="regular-price-checkout">${pricing?.price || 97}</span>
+            )}
+          </div>
+        </div>
         
         <div className="features-list">
           <h3>What's Included:</h3>
@@ -267,10 +280,54 @@ export default function StripeCheckout({ isVisible, onClose }) {
         }
         
         .course-info {
-          color: #666;
           margin-bottom: 24px;
-          font-size: 16px;
           text-align: center;
+        }
+        
+        .course-title {
+          color: #666;
+          font-size: 16px;
+          margin-bottom: 8px;
+        }
+        
+        .pricing-display {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+        
+        .original-price-checkout {
+          text-decoration: line-through;
+          text-decoration-thickness: 2px;
+          text-decoration-skip-ink: none;
+          color: #999;
+          font-size: 18px;
+          font-weight: 500;
+        }
+        
+        .sale-price-checkout {
+          color: #e6ac55;
+          font-size: 24px;
+          font-weight: 700;
+          font-family: 'Poppins', sans-serif;
+        }
+        
+        .regular-price-checkout {
+          color: #333;
+          font-size: 24px;
+          font-weight: 700;
+          font-family: 'Poppins', sans-serif;
+        }
+        
+        .savings-badge {
+          background: #4caf50;
+          color: white;
+          padding: 4px 8px;
+          border-radius: 4px;
+          font-size: 14px;
+          font-weight: 600;
         }
         
         .email-form {
