@@ -288,10 +288,10 @@ export default function Home() {
               lineHeight: "1",
             }}
           >
-            A practical course for experienced
-            <br className="br-mobile-only" /> producers
+            A PRACTICAL COURSE FOR EXPERIENCED MUSIC PRODUCERS
+            <br className="br-mobile-only" />
             <br className="br-desktop-only" />
-            who want to push their boundaries.
+            WHO WANT TO PUSH THE BOUNDARIES OF SAMPLING.
           </p>
 
           <button
