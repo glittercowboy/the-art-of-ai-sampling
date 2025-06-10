@@ -78,6 +78,10 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 # 4000000000000002 (Card declined)
 ```
 
+## Development Memories
+
+- Don't try to run the server. I will run it with npm run dev myself
+
 ## Design Guidelines
 
 When making changes to the website, follow these principles from the `website-design-brief.md`:

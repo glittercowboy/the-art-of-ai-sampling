@@ -5,6 +5,7 @@ import stripe from '../../lib/stripe'
 import { sendPurchaseEvent } from '../../lib/facebook'
 import { sendWebhook } from '../../lib/ghl'
 import getRawBody from '../../middleware/raw-body'
+import { logger } from '../../lib/logger'
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -21,7 +22,7 @@ export default async function handler(req, res) {
     const rawBody = await getRawBody(req)
     event = stripe.webhooks.constructEvent(rawBody, sig, webhookSecret)
   } catch (err) {
-    console.error('Webhook signature verification failed:', err.message)
+    logger.error('Webhook signature verification failed:', err.message)
     return res.status(400).json({ error: 'Webhook signature verification failed' })
   }
 
@@ -47,9 +48,9 @@ export default async function handler(req, res) {
           value: customerData.amount,
           currency: customerData.currency
         })
-        console.log('Facebook CAPI Purchase event sent successfully')
+        logger.info('Facebook CAPI Purchase event sent successfully')
       } catch (fbError) {
-        console.error('Facebook CAPI error:', fbError.message)
+        logger.error('Facebook CAPI error:', fbError.message)
         // Continue processing even if Facebook fails
       }
 
@@ -62,14 +63,14 @@ export default async function handler(req, res) {
           paymentId: customerData.paymentId,
           amount: customerData.amount
         })
-        console.log('GHL webhook sent successfully')
+        logger.info('GHL webhook sent successfully')
       } catch (ghlError) {
-        console.error('GHL webhook error:', ghlError.message)
+        logger.error('GHL webhook error:', ghlError.message)
         // Continue processing even if GHL fails
       }
 
     } catch (error) {
-      console.error('Error processing payment webhook:', error.message)
+      logger.error('Error processing payment webhook:', error.message)
       // Still return 200 to acknowledge receipt to Stripe
     }
   }

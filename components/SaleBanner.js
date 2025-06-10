@@ -66,7 +66,6 @@ export default function SaleBanner({ onCtaClick }) {
           padding: 12px 20px;
           z-index: 1000;
           border-top: 1px solid #333;
-          position: relative;
         }
         
         .banner-content {
