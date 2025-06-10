@@ -50,7 +50,7 @@ export default function SaleBanner({ onCtaClick }) {
         
         <div className="banner-actions">
           <button className="cta-btn" onClick={onCtaClick}>
-            SAVE ${pricing.savings} NOW
+            CLAIM OFFER NOW
           </button>
         </div>
       </div>
@@ -99,19 +99,24 @@ export default function SaleBanner({ onCtaClick }) {
         }
         
         .cta-btn {
-          background: white;
-          color: #000;
+          background: #e6ac55;
+          color: white;
           border: none;
-          padding: 8px 16px;
-          border-radius: 4px;
-          font-weight: 500;
+          padding: 10px 20px;
+          border-radius: 25px;
+          font-weight: 600;
           font-size: 14px;
           cursor: pointer;
-          transition: opacity 0.2s ease;
+          transition: all 0.3s ease;
+          font-family: "Poppins", sans-serif;
+          letter-spacing: 0.5px;
+          text-transform: uppercase;
         }
         
         .cta-btn:hover {
-          opacity: 0.9;
+          transform: translateY(-2px);
+          box-shadow: 0 5px 15px rgba(230, 172, 85, 0.3);
+          background: #d49b44;
         }
         
         .close-btn {
@@ -158,7 +163,7 @@ export default function SaleBanner({ onCtaClick }) {
           
           .cta-btn {
             font-size: 13px;
-            padding: 6px 12px;
+            padding: 8px 16px;
           }
           
           .close-btn {
