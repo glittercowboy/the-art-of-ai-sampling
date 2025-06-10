@@ -594,13 +594,19 @@ export default function Home() {
         <section id="pricing" className="section">
           <div className="container">
             <div className="pricing-box">
+              <div className="sale-badge">🌞 SUMMER SALE - LIMITED TIME</div>
               <h2>JOIN THE COURSE</h2>
               <div className="pricing-content">
                 <div className="price-tag">
+                  <div className="original-price">
+                    <span className="currency">$</span>
+                    <span className="amount">97</span>
+                  </div>
                   <div className="price">
                     <span className="currency">$</span>
                     <span className="amount">47</span>
                   </div>
+                  <div className="savings">Save $50!</div>
                 </div>
                 <div className="price-features">
                   <h3>What&apos;s Included:</h3>
