@@ -4,7 +4,7 @@
  */
 
 import { createMocks } from 'node-mocks-http'
-import handler from '../api/create-payment-intent'
+import handler from '../pages/api/create-payment-intent'
 import stripe from '../lib/stripe'
 
 // Mock Stripe
@@ -14,13 +14,28 @@ jest.mock('../lib/stripe', () => ({
   }
 }))
 
+// Mock sale-config
+jest.mock('../lib/sale-config', () => ({
+  getCurrentPricing: jest.fn()
+}))
+
+import { getCurrentPricing } from '../lib/sale-config'
+
 describe('/api/create-payment-intent', () => {
   beforeEach(() => {
     // Reset mocks
     jest.clearAllMocks()
+    
+    // Default to regular pricing
+    getCurrentPricing.mockReturnValue({
+      price: 97,
+      stripePriceId: 'price_1RXnr4Gk1M5Eg2svb9riyGQv',
+      isOnSale: false,
+      sale: null
+    })
   })
 
-  test('should create payment intent with correct amount', async () => {
+  test('should create payment intent with regular pricing', async () => {
     const { req, res } = createMocks({
       method: 'POST',
       body: {
@@ -33,7 +48,7 @@ describe('/api/create-payment-intent', () => {
     stripe.paymentIntents.create.mockResolvedValue({
       id: 'pi_test_123',
       client_secret: 'pi_test_123_secret_456',
-      amount: 9800,
+      amount: 9700,
       currency: 'usd'
     })
 
@@ -47,7 +62,7 @@ describe('/api/create-payment-intent', () => {
 
     // Verify Stripe was called with correct parameters
     expect(stripe.paymentIntents.create).toHaveBeenCalledWith({
-      amount: 9800, // $98.00 in cents
+      amount: 9700, // $97.00 in cents
       currency: 'usd',
       automatic_payment_methods: {
         enabled: true,
@@ -55,7 +70,65 @@ describe('/api/create-payment-intent', () => {
       metadata: {
         email: 'test@example.com',
         name: 'Test User',
-        product: 'The Art of AI Sampling Course'
+        product: 'The Art of AI Sampling Course',
+        price_paid: '97',
+        stripe_price_id: 'price_1RXnr4Gk1M5Eg2svb9riyGQv',
+        is_on_sale: 'false'
+      }
+    })
+  })
+
+  test('should create payment intent with sale pricing', async () => {
+    // Mock sale pricing
+    getCurrentPricing.mockReturnValue({
+      price: 47,
+      originalPrice: 97,
+      stripePriceId: 'price_1RYWXJGk1M5Eg2svgJntoCRs',
+      savings: 50,
+      isOnSale: true,
+      sale: {
+        id: 'summer2024',
+        name: 'Summer Sale'
+      }
+    })
+
+    const { req, res } = createMocks({
+      method: 'POST',
+      body: {
+        email: 'test@example.com',
+        name: 'Test User'
+      }
+    })
+
+    // Mock Stripe payment intent creation
+    stripe.paymentIntents.create.mockResolvedValue({
+      id: 'pi_test_123',
+      client_secret: 'pi_test_123_secret_456',
+      amount: 4700,
+      currency: 'usd'
+    })
+
+    await handler(req, res)
+
+    expect(res._getStatusCode()).toBe(200)
+
+    // Verify Stripe was called with sale pricing
+    expect(stripe.paymentIntents.create).toHaveBeenCalledWith({
+      amount: 4700, // $47.00 in cents
+      currency: 'usd',
+      automatic_payment_methods: {
+        enabled: true,
+      },
+      metadata: {
+        email: 'test@example.com',
+        name: 'Test User',
+        product: 'The Art of AI Sampling Course',
+        price_paid: '47',
+        stripe_price_id: 'price_1RYWXJGk1M5Eg2svgJntoCRs',
+        is_on_sale: 'true',
+        sale_type: 'summer2024',
+        original_price: '97',
+        savings: '50'
       }
     })
   })
