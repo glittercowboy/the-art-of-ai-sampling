@@ -5,6 +5,7 @@ import { useState, useEffect } from 'react'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from './CheckoutForm'
+import { logger } from '../lib/logger'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
@@ -29,7 +30,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
 
     try {
       // 🎯 Track lead capture - this is a HIGH VALUE event!
-      console.log('📧 Lead captured:', { name, email });
+      logger.dev('📧 Lead captured:', logger.sanitize({ name, email }));
       
       try {
         const { trackEvent } = await import('../lib/analytics-tracker');
@@ -38,11 +39,11 @@ export default function StripeCheckout({ isVisible, onClose }) {
           email,
           action: 'email_name_submitted',
           lead_source: 'checkout_form',
-          value: 98 // Potential value
+          value: 47 // Potential value
         });
-        console.log('✅ Lead capture tracked');
+        logger.dev('✅ Lead capture tracked');
       } catch (analyticsError) {
-        console.warn('❌ Failed to track lead capture:', analyticsError);
+        logger.devWarn('❌ Failed to track lead capture:', analyticsError.message);
       }
 
       // 🎯 Send lead to GoHighLevel CRM
@@ -57,9 +58,9 @@ export default function StripeCheckout({ isVisible, onClose }) {
             status: 'checkout_started' 
           }),
         });
-        console.log('✅ Lead sent to GoHighLevel');
+        logger.dev('✅ Lead sent to GoHighLevel');
       } catch (ghlError) {
-        console.warn('❌ Failed to send lead to GHL:', ghlError);
+        logger.devWarn('❌ Failed to send lead to GHL:', ghlError.message);
         // Don't block checkout if GHL fails
       }
 
@@ -86,9 +87,9 @@ export default function StripeCheckout({ isVisible, onClose }) {
           email,
           action: 'payment_form_displayed'
         });
-        console.log('✅ Checkout form display tracked');
+        logger.dev('✅ Checkout form display tracked');
       } catch (analyticsError) {
-        console.warn('❌ Failed to track checkout form display:', analyticsError);
+        logger.devWarn('❌ Failed to track checkout form display:', analyticsError.message);
       }
       
     } catch (err) {
@@ -137,7 +138,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
         <button className="close-btn" onClick={handleClose}>×</button>
         
         <h2>Complete Your Purchase</h2>
-        <p className="course-info">The Art of AI Sampling Course - $97</p>
+        <p className="course-info">The Art of AI Sampling Course - $47</p>
         
         {!showForm ? (
           <form onSubmit={handleEmailSubmit} className="email-form" data-testid="email-form">

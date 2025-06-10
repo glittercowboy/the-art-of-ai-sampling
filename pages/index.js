@@ -5,6 +5,7 @@ import Head from "next/head";
 import Script from "next/script";
 import { useEffect, useState, useRef } from "react";
 import StripeCheckout from "../components/StripeCheckout";
+import { logger } from '../lib/logger';
 
 export default function Home() {
   const [showCheckout, setShowCheckout] = useState(false);
@@ -39,7 +40,7 @@ export default function Home() {
       if (typeof fbq !== "undefined") {
         fbq("track", "ViewContent", {
           content_name: "Checkout Page Click",
-          value: 97.0,
+          value: 47.0,
           currency: "USD",
         });
       }
@@ -115,7 +116,7 @@ export default function Home() {
         const { init } = await import('../lib/analytics-tracker');
         await init();
       } catch (error) {
-        console.warn('Analytics initialization failed:', error);
+        logger.devWarn('Analytics initialization failed:', error.message);
       }
     };
 
@@ -124,27 +125,27 @@ export default function Home() {
   }, []);
 
   const handleRegisterClick = async () => {
-    console.log('🎯 CTA Button clicked - opening payment form');
+    logger.dev('🎯 CTA Button clicked - opening payment form');
     
     // Track payment form opening with our analytics
     try {
       const { trackEvent } = await import('../lib/analytics-tracker');
       await trackEvent('click', {
         element: 'cta-payment-form',
-        element_text: 'Start Course - $98',
+        element_text: 'Start Course - $47',
         action: 'payment_form_open',
-        value: 98
+        value: 47
       });
-      console.log('✅ Payment form open tracked');
+      logger.dev('✅ Payment form open tracked');
     } catch (error) {
-      console.warn('❌ Failed to track payment form open:', error);
+      logger.devWarn('❌ Failed to track payment form open:', error.message);
     }
 
     // Track checkout initiation with Facebook
     if (typeof fbq !== "undefined") {
       fbq("track", "InitiateCheckout", {
         content_name: "The Art of AI Sampling Course",
-        value: 98.0,
+        value: 47.0,
         currency: "USD",
       });
     }
@@ -598,7 +599,7 @@ export default function Home() {
                 <div className="price-tag">
                   <div className="price">
                     <span className="currency">$</span>
-                    <span className="amount">97</span>
+                    <span className="amount">47</span>
                   </div>
                 </div>
                 <div className="price-features">
