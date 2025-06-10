@@ -20,6 +20,37 @@ jest.mock('../components/StripeCheckout', () => {
   }
 })
 
+// Mock CountdownTimer component  
+jest.mock('../components/CountdownTimer', () => {
+  return function CountdownTimer() {
+    return <div>20d 14h 23m 15s</div>
+  }
+})
+
+// Mock SaleBanner component
+jest.mock('../components/SaleBanner', () => {
+  return function SaleBanner() {
+    return <div>Summer Sale Banner</div>
+  }
+})
+
+// Mock sale-config
+jest.mock('../lib/sale-config', () => ({
+  getCurrentPricing: jest.fn(() => ({
+    price: 47,
+    originalPrice: 97,
+    stripePriceId: 'price_1RYWXJGk1M5Eg2svgJntoCRs',
+    savings: 50,
+    isOnSale: true,
+    sale: {
+      id: 'summer2025',
+      name: 'Summer Sale',
+      emoji: '🌞'
+    }
+  })),
+  isSaleActive: jest.fn(() => true)
+}))
+
 // Mock window methods
 beforeEach(() => {
   // Mock fbq function
@@ -110,7 +141,7 @@ describe('Next.js Conversion Features', () => {
     // Should call Facebook tracking for checkout initiation
     expect(global.fbq).toHaveBeenCalledWith('track', 'InitiateCheckout', {
       content_name: 'The Art of AI Sampling Course',
-      value: 98.00,
+      value: 47,
       currency: 'USD'
     })
     

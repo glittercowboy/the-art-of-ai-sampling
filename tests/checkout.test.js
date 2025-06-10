@@ -23,6 +23,16 @@ jest.mock('@stripe/react-stripe-js', () => ({
   AddressElement: () => <div data-testid="address-element">Address Element</div>
 }))
 
+// Mock sale-config
+jest.mock('../lib/sale-config', () => ({
+  getCurrentPricing: jest.fn(() => ({
+    price: 97,
+    stripePriceId: 'price_1RXnr4Gk1M5Eg2svb9riyGQv',
+    isOnSale: false,
+    sale: null
+  }))
+}))
+
 // Mock fetch
 global.fetch = jest.fn()
 

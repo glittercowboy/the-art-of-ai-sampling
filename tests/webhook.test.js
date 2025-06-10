@@ -4,7 +4,7 @@
  */
 
 import { createMocks } from 'node-mocks-http'
-import handler from '../api/stripe-webhook'
+import handler from '../pages/api/stripe-webhook'
 
 // Mock all dependencies
 jest.mock('../lib/stripe')
