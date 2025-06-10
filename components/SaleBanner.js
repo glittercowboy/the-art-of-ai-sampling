@@ -33,6 +33,10 @@ export default function SaleBanner({ onCtaClick }) {
 
   return (
     <div className="sale-banner">
+      <button className="close-btn" onClick={handleClose} aria-label="Close">
+        ×
+      </button>
+      
       <div className="banner-content">
         <div className="banner-left">
           <span className="sale-text">
@@ -48,9 +52,6 @@ export default function SaleBanner({ onCtaClick }) {
           <button className="cta-btn" onClick={onCtaClick}>
             SAVE ${pricing.savings} NOW
           </button>
-          <button className="close-btn" onClick={handleClose} aria-label="Close">
-            ×
-          </button>
         </div>
       </div>
       
@@ -65,6 +66,7 @@ export default function SaleBanner({ onCtaClick }) {
           padding: 12px 20px;
           z-index: 1000;
           border-top: 1px solid #333;
+          position: relative;
         }
         
         .banner-content {
@@ -95,7 +97,6 @@ export default function SaleBanner({ onCtaClick }) {
           display: flex;
           align-items: center;
           justify-content: flex-end;
-          gap: 12px;
         }
         
         .cta-btn {
@@ -115,6 +116,9 @@ export default function SaleBanner({ onCtaClick }) {
         }
         
         .close-btn {
+          position: absolute;
+          top: 4px;
+          right: 8px;
           background: none;
           border: none;
           color: #666;
@@ -122,6 +126,7 @@ export default function SaleBanner({ onCtaClick }) {
           cursor: pointer;
           padding: 4px;
           line-height: 1;
+          z-index: 1;
         }
         
         .close-btn:hover {
@@ -132,6 +137,7 @@ export default function SaleBanner({ onCtaClick }) {
         @media (max-width: 768px) {
           .sale-banner {
             padding: 8px 15px;
+            padding-right: 35px; /* Extra space for close button */
           }
           
           .banner-content {
@@ -154,6 +160,11 @@ export default function SaleBanner({ onCtaClick }) {
           .cta-btn {
             font-size: 13px;
             padding: 6px 12px;
+          }
+          
+          .close-btn {
+            top: 6px;
+            right: 6px;
           }
         }
       `}</style>
