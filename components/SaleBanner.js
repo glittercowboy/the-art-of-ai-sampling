@@ -33,29 +33,20 @@ export default function SaleBanner({ onCtaClick }) {
 
   return (
     <div className="sale-banner">
-      <button className="close-btn" onClick={handleClose} aria-label="Close banner">
-        ×
-      </button>
-      
       <div className="banner-content">
-        <div className="banner-left">
-          <div className="sale-info">
-            <span className="sale-badge-small">{pricing.sale.emoji} {pricing.sale.name}</span>
-            <div className="price-info">
-              <span className="original-price-small">${pricing.originalPrice}</span>
-              <span className="sale-price-large">${pricing.price}</span>
-              <span className="savings-small">Save ${pricing.savings}!</span>
-            </div>
-          </div>
+        <div className="banner-text">
+          <span className="sale-text">
+            Summer Sale: Get the course for ${pricing.price} (was ${pricing.originalPrice}) • 
+          </span>
+          <CountdownTimer onExpire={handleCountdownExpire} className="countdown-inline" />
         </div>
         
-        <div className="banner-center">
-          <CountdownTimer onExpire={handleCountdownExpire} className="countdown-compact" />
-        </div>
-        
-        <div className="banner-right">
+        <div className="banner-actions">
           <button className="cta-btn" onClick={onCtaClick}>
-            Get Course Now
+            Get Course
+          </button>
+          <button className="close-btn" onClick={handleClose} aria-label="Close">
+            ×
           </button>
         </div>
       </div>
@@ -66,38 +57,11 @@ export default function SaleBanner({ onCtaClick }) {
           bottom: 0;
           left: 0;
           right: 0;
-          background: linear-gradient(135deg, #ff6b6b, #ffd93d);
+          background: #000;
           color: white;
           padding: 12px 20px;
-          box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
           z-index: 1000;
-          animation: slideUp 0.3s ease-out;
-        }
-        
-        @keyframes slideUp {
-          from {
-            transform: translateY(100%);
-          }
-          to {
-            transform: translateY(0);
-          }
-        }
-        
-        .close-btn {
-          position: absolute;
-          top: 8px;
-          right: 15px;
-          background: none;
-          border: none;
-          color: white;
-          font-size: 20px;
-          cursor: pointer;
-          opacity: 0.8;
-          line-height: 1;
-        }
-        
-        .close-btn:hover {
-          opacity: 1;
+          border-top: 1px solid #333;
         }
         
         .banner-content {
@@ -106,137 +70,74 @@ export default function SaleBanner({ onCtaClick }) {
           justify-content: space-between;
           max-width: 1200px;
           margin: 0 auto;
-          gap: 20px;
+          font-size: 14px;
         }
         
-        .banner-left {
-          flex: 1;
-          min-width: 200px;
-        }
-        
-        .sale-info {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-        
-        .sale-badge-small {
-          font-size: 0.8rem;
-          font-weight: 600;
-          text-transform: uppercase;
-          letter-spacing: 0.5px;
-        }
-        
-        .price-info {
+        .banner-text {
           display: flex;
           align-items: center;
           gap: 8px;
         }
         
-        .original-price-small {
-          text-decoration: line-through;
-          opacity: 0.8;
-          font-size: 1rem;
+        .sale-text {
+          color: #ccc;
         }
         
-        .sale-price-large {
-          font-size: 1.5rem;
-          font-weight: 700;
-          font-family: 'Poppins', sans-serif;
-        }
-        
-        .savings-small {
-          background: rgba(255, 255, 255, 0.2);
-          padding: 2px 8px;
-          border-radius: 12px;
-          font-size: 0.8rem;
-          font-weight: 600;
-        }
-        
-        .banner-center {
-          flex: 1;
+        .banner-actions {
           display: flex;
-          justify-content: center;
-        }
-        
-        .banner-right {
-          flex: 1;
-          display: flex;
-          justify-content: flex-end;
-          min-width: 150px;
+          align-items: center;
+          gap: 12px;
         }
         
         .cta-btn {
           background: white;
-          color: #ff6b6b;
+          color: #000;
           border: none;
-          padding: 12px 24px;
-          border-radius: 25px;
-          font-weight: 600;
-          font-size: 1rem;
+          padding: 8px 16px;
+          border-radius: 4px;
+          font-weight: 500;
+          font-size: 14px;
           cursor: pointer;
-          transition: all 0.2s ease;
-          box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+          transition: opacity 0.2s ease;
         }
         
         .cta-btn:hover {
-          transform: translateY(-1px);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          opacity: 0.9;
+        }
+        
+        .close-btn {
+          background: none;
+          border: none;
+          color: #666;
+          font-size: 16px;
+          cursor: pointer;
+          padding: 4px;
+          line-height: 1;
+        }
+        
+        .close-btn:hover {
+          color: #999;
         }
         
         /* Mobile responsive */
         @media (max-width: 768px) {
           .sale-banner {
-            padding: 10px 15px;
+            padding: 8px 15px;
           }
           
           .banner-content {
             flex-direction: column;
             gap: 8px;
+            font-size: 13px;
+          }
+          
+          .banner-text {
             text-align: center;
           }
           
-          .banner-left,
-          .banner-center,
-          .banner-right {
-            flex: none;
-          }
-          
-          .price-info {
-            justify-content: center;
-          }
-          
-          .sale-price-large {
-            font-size: 1.3rem;
-          }
-          
           .cta-btn {
-            padding: 10px 20px;
-            font-size: 0.9rem;
-          }
-          
-          .close-btn {
-            top: 5px;
-            right: 10px;
-            font-size: 18px;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          .banner-content {
-            gap: 6px;
-          }
-          
-          .sale-info {
-            gap: 2px;
-          }
-          
-          .price-info {
-            gap: 6px;
-          }
-          
-          .sale-price-large {
-            font-size: 1.2rem;
+            font-size: 13px;
+            padding: 6px 12px;
           }
         }
       `}</style>

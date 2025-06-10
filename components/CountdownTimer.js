@@ -168,6 +168,50 @@ export default function CountdownTimer({ onExpire, className }) {
             font-size: 1rem;
           }
         }
+        
+        /* Inline styles for banner */
+        .countdown-timer.countdown-inline {
+          margin: 0;
+        }
+        
+        .countdown-inline .countdown-label {
+          display: none;
+        }
+        
+        .countdown-inline .countdown-display {
+          gap: 4px;
+        }
+        
+        .countdown-inline .countdown-number {
+          font-size: 14px;
+          color: white;
+          font-weight: 600;
+        }
+        
+        .countdown-inline .countdown-text {
+          font-size: 11px;
+          color: #999;
+        }
+        
+        .countdown-inline .countdown-separator {
+          color: #666;
+          font-size: 12px;
+          margin: 0 1px;
+        }
+        
+        .countdown-inline .countdown-unit {
+          min-width: auto;
+        }
+        
+        @media (max-width: 768px) {
+          .countdown-inline .countdown-number {
+            font-size: 13px;
+          }
+          
+          .countdown-inline .countdown-text {
+            font-size: 10px;
+          }
+        }
       `}</style>
     </div>
   )

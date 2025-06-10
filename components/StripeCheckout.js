@@ -149,6 +149,29 @@ export default function StripeCheckout({ isVisible, onClose }) {
         <h2>Complete Your Purchase</h2>
         <p className="course-info">The Art of AI Sampling Course - ${pricing?.price || 97}{pricing?.isOnSale ? ` (Save $${pricing.savings}!)` : ''}</p>
         
+        <div className="features-list">
+          <h3>What's Included:</h3>
+          <ul>
+            <li><strong>6.5-Hour Course</strong>
+              <ul>
+                <li>Vision Development - Translating musical ideas into effective AI prompts</li>
+                <li>Advanced UDIO Techniques - Moving beyond basic generation</li>
+                <li>Stem Separation and Processing - Extracting and refining elements</li>
+                <li>Production Integration - Incorporating AI into your workflow</li>
+                <li>Sound Design and Repair - Professional enhancement techniques</li>
+              </ul>
+            </li>
+            <li><strong>Lifetime Access to Course Materials</strong></li>
+          </ul>
+          <h4>You'll also receive:</h4>
+          <ul>
+            <li>My "UDIO Prompt Engineering Cheat Sheet" PDF</li>
+            <li>Access to my Custom Random Tag Generator App</li>
+            <li>My Custom Stem Splitting Software</li>
+            <li>All Of My Personal Custom Prompt Templates</li>
+          </ul>
+        </div>
+        
         {!showForm ? (
           <form onSubmit={handleEmailSubmit} className="email-form" data-testid="email-form">
             <div className="form-group">
@@ -310,6 +333,49 @@ export default function StripeCheckout({ isVisible, onClose }) {
           background: #fdf2f2;
           border: 1px solid #fecaca;
           border-radius: 6px;
+        }
+        
+        .features-list {
+          background: #f9f9f9;
+          padding: 20px;
+          border-radius: 8px;
+          margin-bottom: 24px;
+          text-align: left;
+        }
+        
+        .features-list h3 {
+          margin: 0 0 12px 0;
+          font-size: 16px;
+          color: #333;
+        }
+        
+        .features-list h4 {
+          margin: 16px 0 8px 0;
+          font-size: 14px;
+          color: #333;
+        }
+        
+        .features-list ul {
+          margin: 0;
+          padding-left: 18px;
+        }
+        
+        .features-list li {
+          margin-bottom: 6px;
+          font-size: 14px;
+          line-height: 1.4;
+          color: #555;
+        }
+        
+        .features-list ul ul {
+          margin-top: 4px;
+          margin-bottom: 8px;
+        }
+        
+        .features-list ul ul li {
+          font-size: 13px;
+          color: #666;
+          margin-bottom: 3px;
         }
       `}</style>
     </div>
