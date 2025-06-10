@@ -87,7 +87,7 @@ describe('/api/create-payment-intent', () => {
       savings: 50,
       isOnSale: true,
       sale: {
-        id: 'summer2024',
+        id: 'summer2025',
         name: 'Summer Sale'
       }
     })
@@ -126,7 +126,7 @@ describe('/api/create-payment-intent', () => {
         price_paid: '47',
         stripe_price_id: 'price_1RYWXJGk1M5Eg2svgJntoCRs',
         is_on_sale: 'true',
-        sale_type: 'summer2024',
+        sale_type: 'summer2025',
         original_price: '97',
         savings: '50'
       }
