@@ -54,12 +54,10 @@ export default function CountdownTimer({ onExpire, className }) {
           <div className="countdown-number">{formatTime(timeRemaining.hours)}</div>
           <div className="countdown-text">hrs</div>
         </div>
-        <div className="countdown-separator">:</div>
         <div className="countdown-unit">
           <div className="countdown-number">{formatTime(timeRemaining.minutes)}</div>
           <div className="countdown-text">min</div>
         </div>
-        <div className="countdown-separator">:</div>
         <div className="countdown-unit">
           <div className="countdown-number">{formatTime(timeRemaining.seconds)}</div>
           <div className="countdown-text">sec</div>

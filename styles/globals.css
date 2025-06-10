@@ -1391,6 +1391,8 @@ main {
 
 .original-price {
   text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-skip-ink: none;
   opacity: 0.6;
   font-size: 1.2rem;
   margin-bottom: 0.5rem;

@@ -34,16 +34,19 @@ export default function SaleBanner({ onCtaClick }) {
   return (
     <div className="sale-banner">
       <div className="banner-content">
-        <div className="banner-text">
+        <div className="banner-left">
           <span className="sale-text">
-            Summer Sale: Get the course for ${pricing.price} (was ${pricing.originalPrice}) • 
+            Summer Sale: Get the course for ${pricing.price} (was ${pricing.originalPrice})
           </span>
+        </div>
+        
+        <div className="banner-center">
           <CountdownTimer onExpire={handleCountdownExpire} className="countdown-inline" />
         </div>
         
         <div className="banner-actions">
           <button className="cta-btn" onClick={onCtaClick}>
-            Get Course
+            SAVE ${pricing.savings} NOW
           </button>
           <button className="close-btn" onClick={handleClose} aria-label="Close">
             ×
@@ -73,10 +76,14 @@ export default function SaleBanner({ onCtaClick }) {
           font-size: 14px;
         }
         
-        .banner-text {
+        .banner-left {
+          flex: 1;
+        }
+        
+        .banner-center {
+          flex: 1;
           display: flex;
-          align-items: center;
-          gap: 8px;
+          justify-content: center;
         }
         
         .sale-text {
@@ -84,8 +91,10 @@ export default function SaleBanner({ onCtaClick }) {
         }
         
         .banner-actions {
+          flex: 1;
           display: flex;
           align-items: center;
+          justify-content: flex-end;
           gap: 12px;
         }
         
@@ -127,11 +136,18 @@ export default function SaleBanner({ onCtaClick }) {
           
           .banner-content {
             flex-direction: column;
-            gap: 8px;
+            gap: 6px;
             font-size: 13px;
           }
           
-          .banner-text {
+          .banner-left,
+          .banner-center,
+          .banner-actions {
+            flex: none;
+            justify-content: center;
+          }
+          
+          .banner-left {
             text-align: center;
           }
           
