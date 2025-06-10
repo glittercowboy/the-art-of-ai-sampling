@@ -6,9 +6,8 @@ import Script from "next/script";
 import { useEffect, useState, useRef } from "react";
 import StripeCheckout from "../components/StripeCheckout";
 import CountdownTimer from "../components/CountdownTimer";
-import SaleBanner from "../components/SaleBanner";
-import { logger } from '../lib/logger';
-import { getCurrentPricing, isSaleActive } from '../lib/sale-config';
+import { logger } from "../lib/logger";
+import { getCurrentPricing, isSaleActive } from "../lib/sale-config";
 
 export default function Home() {
   const [showCheckout, setShowCheckout] = useState(false);
@@ -123,10 +122,10 @@ export default function Home() {
     const initializeAnalytics = async () => {
       try {
         // Dynamically import the analytics tracker (client-side only)
-        const { init } = await import('../lib/analytics-tracker');
+        const { init } = await import("../lib/analytics-tracker");
         await init();
       } catch (error) {
-        logger.devWarn('Analytics initialization failed:', error.message);
+        logger.devWarn("Analytics initialization failed:", error.message);
       }
     };
 
@@ -142,20 +141,20 @@ export default function Home() {
   };
 
   const handleRegisterClick = async () => {
-    logger.dev('🎯 CTA Button clicked - opening payment form');
-    
+    logger.dev("🎯 CTA Button clicked - opening payment form");
+
     // Track payment form opening with our analytics
     try {
-      const { trackEvent } = await import('../lib/analytics-tracker');
-      await trackEvent('click', {
-        element: 'cta-payment-form',
+      const { trackEvent } = await import("../lib/analytics-tracker");
+      await trackEvent("click", {
+        element: "cta-payment-form",
         element_text: `Start Course - $${pricing?.price || 97}`,
-        action: 'payment_form_open',
-        value: pricing?.price || 97
+        action: "payment_form_open",
+        value: pricing?.price || 97,
       });
-      logger.dev('✅ Payment form open tracked');
+      logger.dev("✅ Payment form open tracked");
     } catch (error) {
-      logger.devWarn('❌ Failed to track payment form open:', error.message);
+      logger.devWarn("❌ Failed to track payment form open:", error.message);
     }
 
     // Track checkout initiation with Facebook
@@ -244,7 +243,9 @@ export default function Home() {
               color: "#000000",
             }}
           >
-            THE ART OF A.I. SAMPLING
+            THE ART OF
+            <br />
+            A.I. SAMPLING
           </h1>
           <p
             style={{
@@ -255,16 +256,15 @@ export default function Home() {
               marginTop: "0",
               marginBottom: "1.5rem",
               color: "#000000",
-              maxWidth: "700px",
+              maxWidth: "900px",
               marginInline: "auto",
               lineHeight: "1",
             }}
           >
-            Learn how to use AI to expand your creative possibilities -{" "}
-            <span style={{ textDecoration: "underline" }}>
-              not replace them
-            </span>
-            .
+            AN ADVANCED COURSE FOR MUSIC PRODUCERS
+            <br className="br-mobile-only" />
+            <br className="br-desktop-only" />
+            LOOKING TO PUSH THE BOUNDARIES OF SAMPLING
           </p>
           <hr
             style={{
@@ -288,10 +288,8 @@ export default function Home() {
               lineHeight: "1",
             }}
           >
-            A PRACTICAL COURSE FOR EXPERIENCED MUSIC PRODUCERS
-            <br className="br-mobile-only" />
-            <br className="br-desktop-only" />
-            WHO WANT TO PUSH THE BOUNDARIES OF SAMPLING.
+            LEARN TO USE AI TO EXPAND YOUR CREATIVITY -{" "}
+            <span style={{ textDecoration: "underline" }}>NOT REPLACE IT</span>.
           </p>
 
           <button
@@ -313,7 +311,7 @@ export default function Home() {
                 "0 4px 15px rgba(230, 172, 85, 0.2), 0 2px 5px rgba(230, 172, 85, 0.15)",
             }}
           >
-            START LEARNING →
+            DISCOVER HOW →
           </button>
         </div>
       </header>
@@ -613,7 +611,10 @@ export default function Home() {
             <div className="pricing-box">
               {saleActive && pricing?.sale && (
                 <>
-                  <div className="sale-badge">{pricing.sale.emoji} {pricing.sale.name.toUpperCase()} - LIMITED TIME</div>
+                  <div className="sale-badge">
+                    {pricing.sale.emoji} {pricing.sale.name.toUpperCase()} -
+                    LIMITED TIME
+                  </div>
                   <CountdownTimer onExpire={handleCountdownExpire} />
                 </>
               )}
@@ -823,9 +824,6 @@ export default function Home() {
 
       {/* Load script.js for typing animation */}
       <Script src="/script.js" strategy="lazyOnload" />
-
-      {/* Sale Banner */}
-      <SaleBanner onCtaClick={handleRegisterClick} />
 
       {/* Stripe Checkout Modal */}
       <StripeCheckout
