@@ -41,7 +41,7 @@ export default async function handler(req, res) {
 
   try {
     // Import storage functions
-    const { incrementCounter, setSessionData, getCounter, setCounter } = require('../../../lib/analytics-storage')
+    const { incrementCounter, setSessionData, getCounter, setCounter, addUnique } = require('../../../lib/analytics-storage')
     
     const { event_type, session_id, timestamp, data } = body
     const today = new Date().toISOString().split('T')[0] // YYYY-MM-DD format
@@ -107,6 +107,12 @@ export default async function handler(req, res) {
         last_event: event_type,
         last_timestamp: timestamp
       })
+      
+      // Track unique visitor in persistent set
+      await addUnique('analytics:visitors:unique', session_id)
+      
+      // Track unique visitor by day
+      await addUnique(`analytics:visitors:unique:${today}`, session_id)
     }
 
     logger.dev(`✅ Successfully stored ${event_type} event`)

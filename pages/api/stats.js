@@ -2,7 +2,7 @@
 // ABOUTME: Aggregates visitor data from KV storage for protected dashboard access
 
 import { getAnalytics } from '../../lib/analytics'
-import { getCounter, getKeysByPattern, checkConnection } from '../../lib/analytics-storage'
+import { getCounter, getKeysByPattern, checkConnection, countUnique } from '../../lib/analytics-storage'
 
 export default async function handler(req, res) {
   // Only allow GET requests
@@ -86,9 +86,9 @@ async function processAnalyticsData(rawData) {
       getCounter('analytics:scroll:100')
     ])
 
-    // Calculate unique visitors (simplified - count unique sessions)
-    const sessionKeys = await getKeysByPattern('analytics:session:*')
-    const uniqueVisitors = sessionKeys.length
+    // Get unique visitors from persistent set
+    const uniqueVisitors = await countUnique('analytics:visitors:unique')
+    const uniqueVisitorsToday = await countUnique(`analytics:visitors:unique:${today}`)
 
     // Calculate conversion rates
     const leadConversionRate = totalPageviews > 0 ? (totalLeads / totalPageviews) * 100 : 0
@@ -118,7 +118,8 @@ async function processAnalyticsData(rawData) {
       visitors: {
         total: totalPageviews,
         today: todayPageviews,
-        unique: uniqueVisitors
+        unique: uniqueVisitors,
+        uniqueToday: uniqueVisitorsToday
       },
       clicks: {
         total: totalClicks,
@@ -159,7 +160,7 @@ async function processAnalyticsData(rawData) {
     console.error('Error processing analytics data:', error)
     // Return empty stats structure on error
     return {
-      visitors: { total: 0, today: 0, unique: 0 },
+      visitors: { total: 0, today: 0, unique: 0, uniqueToday: 0 },
       clicks: { total: 0, today: 0, rate: 0 },
       conversions: { total: 0, rate: 0, revenue: 0 },
       averageTime: 0,

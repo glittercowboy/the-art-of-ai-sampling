@@ -226,6 +226,10 @@ async function processBatchEvents(events) {
         
         // Track unique visitor
         await addUnique('analytics:visitors:unique', event.sessionId)
+        
+        // Track unique visitor by day
+        const eventDate = new Date(event.timestamp).toISOString().split('T')[0]
+        await addUnique(`analytics:visitors:unique:${eventDate}`, event.sessionId)
       }
     }
 
