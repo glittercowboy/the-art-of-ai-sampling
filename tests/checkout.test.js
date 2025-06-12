@@ -51,7 +51,8 @@ describe('StripeCheckout', () => {
     render(<StripeCheckout isVisible={true} onClose={() => {}} />)
     
     expect(screen.getByText('Complete Your Purchase')).toBeInTheDocument()
-    expect(screen.getByText('The Art of AI Sampling Course - $98')).toBeInTheDocument()
+    expect(screen.getByText('The Art of AI Sampling Course')).toBeInTheDocument()
+    expect(screen.getByText('$97')).toBeInTheDocument() // Regular price from mock
     expect(screen.getByLabelText('Full Name')).toBeInTheDocument()
     expect(screen.getByLabelText('Email Address')).toBeInTheDocument()
     expect(screen.getByText('Continue to Payment')).toBeInTheDocument()
@@ -120,7 +121,7 @@ describe('StripeCheckout', () => {
     await waitFor(() => {
       expect(screen.getByTestId('payment-element')).toBeInTheDocument()
       expect(screen.getByTestId('address-element')).toBeInTheDocument()
-      expect(screen.getByText('Pay $98')).toBeInTheDocument()
+      expect(screen.getByText('Pay $97')).toBeInTheDocument() // Regular price from mock
     })
   })
 

@@ -224,6 +224,7 @@ export default function StripeCheckout({ isVisible, onClose }) {
                 clientSecret={clientSecret}
                 email={email}
                 name={name}
+                price={pricing?.price || 97}
               />
             </Elements>
           )

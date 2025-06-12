@@ -9,7 +9,7 @@ import {
   AddressElement
 } from '@stripe/react-stripe-js'
 
-export default function CheckoutForm({ clientSecret, email, name }) {
+export default function CheckoutForm({ clientSecret, email, name, price = 97 }) {
   const stripe = useStripe()
   const elements = useElements()
   const [isLoading, setIsLoading] = useState(false)
@@ -75,7 +75,7 @@ export default function CheckoutForm({ clientSecret, email, name }) {
           {isLoading ? (
             <div className="spinner" id="spinner"></div>
           ) : (
-            `Pay $98`
+            `Pay $${price}`
           )}
         </span>
       </button>

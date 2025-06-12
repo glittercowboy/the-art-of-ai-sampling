@@ -92,38 +92,44 @@ The project follows Test-Driven Development (TDD) with comprehensive test covera
 
 ### Stripe Testing
 
-# Run development server
-npm run dev
-
-# Run tests
-npm test
-
-# Run specific test file
-npm test -- payment.test.js
-
-# Build for production
-npm run build
-
-# Run production build locally
-npm start
-```
-
-### Stripe Integration Testing
-
 For payment testing during development:
 ```bash
 # Use Stripe CLI to forward webhooks to local development
 stripe listen --forward-to localhost:3000/api/stripe-webhook
 
 # Test with Stripe test card numbers
-# 4242424242424242 (Visa)
+# 4242424242424242 (Visa - Success)
 # 4000000000000002 (Card declined)
+# 4000000000003220 (3D Secure authentication required)
+```
+
+## Environment Variables
+
+Required environment variables for development:
+```bash
+# Stripe
+STRIPE_SECRET_KEY=sk_test_...
+STRIPE_PUBLISHABLE_KEY=pk_test_...
+STRIPE_WEBHOOK_SECRET=whsec_...
+
+# Facebook
+FACEBOOK_PIXEL_ID=your_pixel_id
+FACEBOOK_ACCESS_TOKEN=your_access_token
+
+# GHL Integration
+GHL_WEBHOOK_URL=https://...
+
+# Database (Upstash Redis)
+UPSTASH_REDIS_REST_URL=https://...
+UPSTASH_REDIS_REST_TOKEN=...
 ```
 
 ## Development Memories
 
 - Don't try to run the server. I will run it with npm run dev myself
-- You must ALWAYS test and confirm tests pass before moving on to the next task.
+- You must ALWAYS test and confirm tests pass before moving on to the next task
+- Custom analytics system is used instead of Google Analytics or similar services
+- All tracking happens on taches.ai domain to avoid cross-domain attribution issues
 
 ## Design Guidelines
 
@@ -178,32 +184,45 @@ Avoid:
 - Artificial urgency
 - Unnecessary hype
 
-## Project Implementation Context
+## Key Architecture Decisions
 
-This repository is transitioning from a static site to a Next.js application with integrated payments. See `plan.md` for the complete implementation roadmap.
-
-### Key Integration Requirements
-
-**Payment Processing**: 
-- Stripe Elements embedded on taches.ai domain (not redirected)
-- Single $98 payment for course access
-- Professional checkout UX replacing current GHL redirect
-
-**Tracking & Analytics**:
-- Facebook Pixel (browser-side) + Facebook CAPI (server-side)
-- Event deduplication to prevent double-counting
-- Target: >8.0 Event Match Quality score for ad optimization
-
-**CRM Integration**:
-- Webhook to GHL for automated course access
-- Direct HTTP POST to GHL inbound webhook URL
-- Retry logic for webhook reliability
-
-### Critical Architecture Decisions
-
-1. **Single-Domain Tracking**: Everything happens on taches.ai to eliminate cross-domain attribution issues
+1. **Single-Domain Tracking**: All operations happen on taches.ai to eliminate cross-domain attribution issues
 2. **TDD Approach**: Every feature must have passing tests before implementation
 3. **Minimal Complexity**: Use simplest solutions that meet requirements
 4. **Production Ready**: Built for Facebook ad campaigns with reliable conversion tracking
+5. **Event Deduplication**: Prevent double-counting between client and server-side tracking
+6. **No External Analytics**: Custom-built analytics instead of third-party services
 
-When working on this project, always reference `plan.md` for detailed implementation steps and maintain the established design aesthetic while adding new functionality.
+## Integration Details
+
+### Payment Processing
+- Stripe Elements embedded directly on taches.ai (no redirects)
+- Single $98 payment for course access
+- Payment intents created server-side for security
+- Webhook handling with signature verification
+
+### Facebook Tracking
+- Client-side: Facebook Pixel for immediate event firing
+- Server-side: Facebook CAPI for improved attribution
+- Event deduplication using unique event IDs
+- Target: >8.0 Event Match Quality score
+
+### GHL Integration
+- Webhook fires on successful payment
+- Sends customer data for course fulfillment
+- Includes retry logic for reliability
+- Direct HTTP POST to GHL inbound webhook URL
+
+### Analytics System
+- Custom-built visitor tracking
+- Session management with 30-minute timeout
+- Real-time stats dashboard at `/stats`
+- Tracks page views, unique visitors, engagement time, and conversions
+
+## Deployment
+
+The application is deployed on Vercel with the following configuration:
+- Automatic deployments from main branch
+- Environment variables configured in Vercel dashboard
+- `vercel.json` for custom configuration
+- API routes automatically become serverless functions
