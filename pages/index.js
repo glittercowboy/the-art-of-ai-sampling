@@ -320,11 +320,14 @@ export default function Home() {
         <div className="container">
           <div className="testimonial-content">
             <blockquote className="testimonial-quote">
-              "I had a lot of fun with this course. It's a wild use of bleeding-edge music tech that flips the old paradigm of sampling on its head. It opened my mind to new possibilities. What else can you ask for?"
+              "I had a lot of fun with this course. It's a wild use of
+              bleeding-edge music tech that flips the old paradigm of sampling
+              on its head. It opened my mind to new possibilities. What else can
+              you ask for?"
             </blockquote>
             <cite className="testimonial-author">— Boreta, The Glitch Mob</cite>
-            <img 
-              src="https://miro.medium.com/v2/resize:fit:2400/1*c1ARfLwwo5K9Tho1UQcaFQ.jpeg" 
+            <img
+              src="https://miro.medium.com/v2/resize:fit:2400/1*c1ARfLwwo5K9Tho1UQcaFQ.jpeg"
               alt="Boreta from The Glitch Mob"
               className="testimonial-image"
             />
@@ -625,31 +628,33 @@ export default function Home() {
         <section id="pricing" className="section">
           <div className="container">
             <div className="pricing-box">
-              {saleActive && pricing?.sale && (
-                <>
-                  <div className="sale-badge">
-                    {pricing.sale.emoji} {pricing.sale.name.toUpperCase()} -
-                    LIMITED TIME
-                  </div>
-                  <CountdownTimer onExpire={handleCountdownExpire} />
-                </>
-              )}
-              <h2>JOIN THE COURSE</h2>
               <div className="pricing-content">
-                <div className="price-tag">
-                  {saleActive && pricing?.isOnSale && (
-                    <div className="original-price">
+                <div className="price-tag-hero">
+                  <div className="price-line">
+                    {saleActive && pricing?.isOnSale && (
+                      <div className="original-price">
+                        <span className="currency">$</span>
+                        <span className="amount">{pricing.originalPrice}</span>
+                      </div>
+                    )}
+                    <div className="price">
                       <span className="currency">$</span>
-                      <span className="amount">{pricing.originalPrice}</span>
+                      <span className="amount">{pricing?.price || 97}</span>
                     </div>
-                  )}
-                  <div className="price">
-                    <span className="currency">$</span>
-                    <span className="amount">{pricing?.price || 97}</span>
                   </div>
                   {saleActive && pricing?.isOnSale && (
-                    <div className="savings">Save ${pricing.savings}!</div>
+                    <div className="savings">Summer Sale</div>
                   )}
+                </div>
+
+                {saleActive && pricing?.sale && (
+                  <div className="countdown-secondary">
+                    <CountdownTimer onExpire={handleCountdownExpire} />
+                  </div>
+                )}
+
+                <div className="social-proof">
+                  Join 500+ producers already using these techniques
                 </div>
                 <div className="price-features">
                   <h3>What&apos;s Included:</h3>
@@ -658,24 +663,22 @@ export default function Home() {
                       6.5-Hour Course
                       <ul>
                         <li>
-                          Vision Development - Translating musical ideas into
-                          effective AI prompts
+                          Turn your musical ideas into precise AI instructions
                         </li>
                         <li>
-                          Advanced UDIO Techniques - Moving beyond basic
+                          Master UDIO&apos;s advanced features for professional
+                          results
+                        </li>
+                        <li>
+                          Extract and refine the best elements from any
                           generation
                         </li>
                         <li>
-                          Stem Separation and Processing - Extracting and
-                          refining elements
+                          Seamlessly blend AI with your existing production
+                          process
                         </li>
                         <li>
-                          Production Integration - Incorporating AI into your
-                          workflow
-                        </li>
-                        <li>
-                          Sound Design and Repair - Professional enhancement
-                          techniques
+                          Polish AI outputs to professional release standards
                         </li>
                       </ul>
                     </li>
@@ -693,10 +696,22 @@ export default function Home() {
                     <li>All Of My Personal Custom Prompt Templates</li>
                   </ul>
                 </div>
-                <button className="enroll-btn" onClick={handleRegisterClick}>
+                <button
+                  className="enroll-btn-enhanced"
+                  onClick={handleRegisterClick}
+                >
                   ENROLL NOW
+                  <span className="cta-subtext">
+                    Instant access • Start learning today
+                  </span>
                 </button>
-                <p className="guarantee">30-Day Money-Back Guarantee</p>
+                <div className="guarantee-enhanced">
+                  <strong>30-Day Money-Back Guarantee</strong>
+                  <br />
+                  <span>
+                    Not satisfied? Get a full refund, no questions asked.
+                  </span>
+                </div>
               </div>
             </div>
           </div>

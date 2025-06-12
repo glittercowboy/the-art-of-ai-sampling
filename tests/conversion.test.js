@@ -31,10 +31,10 @@ jest.mock("../components/CountdownTimer", () => {
 // Mock sale-config
 jest.mock("../lib/sale-config", () => ({
   getCurrentPricing: jest.fn(() => ({
-    price: 47,
+    price: 67,
     originalPrice: 97,
     stripePriceId: "price_1RYWXJGk1M5Eg2svgJntoCRs",
-    savings: 50,
+    savings: 30,
     isOnSale: true,
     sale: {
       id: "summer2025",
@@ -99,8 +99,7 @@ describe("Next.js Conversion Features", () => {
   test("should render pricing section", () => {
     render(<Home />);
 
-    expect(screen.getByText("JOIN THE COURSE")).toBeInTheDocument();
-    expect(screen.getByText("98")).toBeInTheDocument();
+    expect(screen.getByText("67")).toBeInTheDocument();
     expect(screen.getByText("30-Day Money-Back Guarantee")).toBeInTheDocument();
   });
 
@@ -141,7 +140,7 @@ describe("Next.js Conversion Features", () => {
     // Should call Facebook tracking for checkout initiation
     expect(global.fbq).toHaveBeenCalledWith("track", "InitiateCheckout", {
       content_name: "The Art of AI Sampling Course",
-      value: 47,
+      value: 67,
       currency: "USD",
     });
 

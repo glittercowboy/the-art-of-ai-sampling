@@ -1141,23 +1141,60 @@ main {
   border-radius: 25px;
 }
 
+.price-tag-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin: 0 0 1rem;
+  color: var(--color-text);
+  padding: 2rem 1.5rem 1.5rem;
+  border-radius: 15px;
+  background: rgba(230, 172, 85, 0.05);
+  border: 2px solid rgba(230, 172, 85, 0.2);
+}
+
+.price-line {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.countdown-secondary {
+  margin: 0.5rem 0 1rem;
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.social-proof {
+  text-align: center;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+  margin: 0.5rem 0 1.5rem;
+  font-style: italic;
+}
+
 .price {
   color: var(--color-primary);
   font-weight: bold;
   display: flex;
   align-items: baseline;
+  order: 2;
 }
 
 .price .currency {
-  font-size: 1.5rem;
-  margin-right: 0.2rem;
-  font-weight: 500;
+  font-size: 2rem;
+  margin-right: 0.3rem;
+  font-weight: 600;
 }
 
 .price .amount {
-  font-size: 2.8rem;
-  font-weight: 600;
-  line-height: 1;
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 0.9;
+  letter-spacing: -2px;
 }
 
 /* Discount message and countdown timer styling removed */
@@ -1240,10 +1277,56 @@ main {
   background: var(--color-accent);
 }
 
+.enroll-btn-enhanced {
+  background: var(--color-primary);
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 1.2rem 3rem;
+  font-size: 1.2rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin: 1.5rem 0 1rem;
+  font-family: var(--font-heading);
+  letter-spacing: 1px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  box-shadow: 0 4px 15px rgba(230, 172, 85, 0.3);
+}
+
+.enroll-btn-enhanced:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(230, 172, 85, 0.4);
+  background: var(--color-accent);
+}
+
+.cta-subtext {
+  font-size: 0.85rem;
+  font-weight: 400;
+  margin-top: 0.3rem;
+  opacity: 0.9;
+  letter-spacing: 0.5px;
+}
+
 .guarantee {
   color: var(--color-text-muted);
   font-size: 0.85rem;
   margin-top: 0.8rem;
+}
+
+.guarantee-enhanced {
+  text-align: center;
+  margin: 0.5rem 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.guarantee-enhanced strong {
+  color: var(--color-text);
+  font-size: 1rem;
 }
 
 @media (max-width: 768px) {
@@ -1262,6 +1345,44 @@ main {
 
   .price-features li {
     font-size: 0.95rem;
+  }
+
+  .price-tag-hero {
+    padding: 1.5rem 1rem 1rem;
+    margin: 0 0 0.8rem;
+  }
+
+  .price .currency {
+    font-size: 1.5rem;
+  }
+
+  .price .amount {
+    font-size: 3.5rem;
+    letter-spacing: -1px;
+  }
+
+  .enroll-btn-enhanced {
+    padding: 1rem 2rem;
+    font-size: 1.1rem;
+    margin: 1rem 0 0.8rem;
+  }
+
+  .cta-subtext {
+    font-size: 0.8rem;
+  }
+
+  .social-proof {
+    font-size: 0.85rem;
+    margin: 0.3rem 0 1rem;
+  }
+
+  .guarantee-enhanced {
+    font-size: 0.85rem;
+  }
+
+  .countdown-secondary {
+    font-size: 0.8rem;
+    margin: 0.3rem 0 0.8rem;
   }
 }
 
@@ -1390,10 +1511,12 @@ main {
 }
 
 .original-price {
-  opacity: 0.6;
-  font-size: 1.2rem;
-  margin-bottom: 0.5rem;
+  opacity: 0.5;
+  font-size: 1.1rem;
+  margin: 0;
   position: relative;
+  order: 1;
+  color: var(--color-text-muted);
 }
 
 .original-price::after {
@@ -1402,29 +1525,33 @@ main {
   left: 0;
   right: 0;
   top: 50%;
-  height: 2px;
+  height: 1.5px;
   background: currentColor;
   transform: translateY(-50%);
 }
 
 .original-price .currency {
-  font-size: 1.2rem;
+  font-size: 0.9rem;
+  margin-right: 0.1rem;
 }
 
 .original-price .amount {
-  font-size: 2rem;
+  font-size: 1.1rem;
   font-weight: 500;
 }
 
 .savings {
-  background: #4caf50;
+  background: var(--color-primary);
   color: white;
-  padding: 0.3rem 0.8rem;
-  border-radius: 15px;
-  font-size: 0.9rem;
-  font-weight: 600;
-  margin-top: 0.5rem;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin-top: 1rem;
   display: inline-block;
+  font-family: var(--font-heading);
+  letter-spacing: 0.5px;
+  order: 3;
 }
 
 /* Mobile header positioning fix */
