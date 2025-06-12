@@ -2,7 +2,7 @@
 // ABOUTME: Aggregates visitor data from KV storage for protected dashboard access
 
 import { getAnalytics } from '../../lib/analytics'
-import { getCounter, getKeysByPattern } from '../../lib/analytics-storage'
+import { getCounter, getKeysByPattern, checkConnection } from '../../lib/analytics-storage'
 
 export default async function handler(req, res) {
   // Only allow GET requests
@@ -25,11 +25,17 @@ export default async function handler(req, res) {
   }
 
   try {
+    // Get connection status
+    const connectionStatus = await checkConnection()
+    
     // Get analytics data from storage
     const analyticsData = await getAnalytics()
     
     // Process and aggregate the data
     const stats = await processAnalyticsData(analyticsData)
+    
+    // Add connection status to response
+    stats.connectionStatus = connectionStatus
     
     res.status(200).json(stats)
   } catch (error) {

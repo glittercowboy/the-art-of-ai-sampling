@@ -6,6 +6,19 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 
 export default function Dashboard({ authenticated = false }) {
+  // Add pulse animation styles
+  if (typeof window !== 'undefined' && !document.getElementById('pulse-animation')) {
+    const style = document.createElement('style')
+    style.id = 'pulse-animation'
+    style.textContent = `
+      @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+      }
+    `
+    document.head.appendChild(style)
+  }
   const [isAuthenticated, setIsAuthenticated] = useState(authenticated)
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
@@ -152,6 +165,38 @@ export default function Dashboard({ authenticated = false }) {
         <header style={styles.header}>
           <h1>Analytics Dashboard</h1>
           <p>Last updated: {formatDate(data.lastUpdated)}</p>
+          
+          {/* Connection Status Indicator */}
+          <div 
+            data-testid="connection-indicator"
+            className={data.connectionStatus?.connected ? 
+              (data.connectionStatus.type === 'redis' ? 'connected' : 'warning') : 
+              'error'
+            }
+            style={{
+              ...styles.connectionStatus,
+              backgroundColor: data.connectionStatus?.connected ? 
+                (data.connectionStatus.type === 'redis' ? '#4caf50' : '#ff9800') : 
+                '#f44336'
+            }}
+          >
+            <span style={styles.connectionDot}></span>
+            {data.connectionStatus?.connected ? (
+              data.connectionStatus.type === 'redis' ? 
+                'Connected to Redis' : 
+                <>
+                  Using In-Memory Storage
+                  <span style={styles.warningText}>Data will be lost on restart</span>
+                </>
+            ) : (
+              <>
+                Disconnected
+                {data.connectionStatus?.error && (
+                  <span style={styles.errorText}>{data.connectionStatus.error}</span>
+                )}
+              </>
+            )}
+          </div>
         </header>
 
         <div style={styles.metricsGrid}>
@@ -326,5 +371,35 @@ const styles = {
   metricLabel: {
     color: '#666',
     fontSize: '0.9rem',
+  },
+  connectionStatus: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    gap: '0.5rem',
+    padding: '0.5rem 1rem',
+    borderRadius: '20px',
+    color: 'white',
+    fontSize: '0.85rem',
+    fontWeight: '500',
+    marginTop: '1rem',
+  },
+  connectionDot: {
+    width: '8px',
+    height: '8px',
+    borderRadius: '50%',
+    backgroundColor: 'currentColor',
+    animation: 'pulse 2s infinite',
+  },
+  warningText: {
+    display: 'block',
+    fontSize: '0.75rem',
+    marginTop: '0.25rem',
+    opacity: 0.9,
+  },
+  errorText: {
+    display: 'block',
+    fontSize: '0.75rem',
+    marginTop: '0.25rem',
+    opacity: 0.9,
   },
 }
