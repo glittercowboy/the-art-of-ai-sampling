@@ -118,12 +118,24 @@ export default function Home() {
       });
     }
 
-    // Initialize analytics tracking
+    // Initialize enhanced analytics tracking v2
     const initializeAnalytics = async () => {
       try {
-        // Dynamically import the analytics tracker (client-side only)
-        const { init } = await import("../lib/analytics-tracker");
-        await init();
+        // Dynamically import the analytics tracker v2 (client-side only)
+        const AnalyticsTrackerV2 = (await import("../lib/analytics-tracker-v2")).default;
+        
+        // Initialize with enhanced configuration
+        window.analytics = new AnalyticsTrackerV2({
+          enableAutoTracking: true,
+          batchEndpoint: '/api/analytics/batch',
+          batchSize: 20,
+          flushInterval: 5000,
+          enableErrorTracking: true,
+          enablePerformanceTracking: true,
+          debug: process.env.NODE_ENV === 'development'
+        });
+        
+        logger.dev("✅ Enhanced analytics v2 initialized");
       } catch (error) {
         logger.devWarn("Analytics initialization failed:", error.message);
       }
@@ -143,16 +155,19 @@ export default function Home() {
   const handleRegisterClick = async () => {
     logger.dev("🎯 CTA Button clicked - opening payment form");
 
-    // Track payment form opening with our analytics
+    // Track payment form opening with enhanced analytics
     try {
-      const { trackEvent } = await import("../lib/analytics-tracker");
-      await trackEvent("click", {
-        element: "cta-payment-form",
-        element_text: `Start Course - $${pricing?.price || 97}`,
-        action: "payment_form_open",
-        value: pricing?.price || 97,
-      });
-      logger.dev("✅ Payment form open tracked");
+      if (window.analytics) {
+        window.analytics.track("checkout_initiated", {
+          element: "cta-payment-form",
+          element_text: `Start Course - $${pricing?.price || 97}`,
+          action: "payment_form_open",
+          value: pricing?.price || 97,
+          price: pricing?.price || 97,
+          currency: "USD"
+        });
+        logger.dev("✅ Payment form open tracked");
+      }
     } catch (error) {
       logger.devWarn("❌ Failed to track payment form open:", error.message);
     }
@@ -560,7 +575,13 @@ export default function Home() {
             </div>
           </div>
           <div className="register-button-container">
-            <button className="register-btn" onClick={handleRegisterClick}>
+            <button 
+              className="register-btn" 
+              onClick={handleRegisterClick}
+              data-track
+              data-track-action="hero_cta_click"
+              data-track-label="Get The Course - Hero"
+            >
               GET THE COURSE
             </button>
           </div>
@@ -699,6 +720,9 @@ export default function Home() {
                 <button
                   className="enroll-btn-enhanced"
                   onClick={handleRegisterClick}
+                  data-track
+                  data-track-action="pricing_cta_click"
+                  data-track-label="Enroll Now - Pricing Section"
                 >
                   ENROLL NOW
                   <span className="cta-subtext">
