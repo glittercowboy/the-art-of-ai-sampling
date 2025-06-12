@@ -1,7 +1,7 @@
 // ABOUTME: Batch analytics API endpoint for processing multiple events efficiently
 // ABOUTME: Handles validation, aggregation, and storage of batched analytics events
 
-import { batchIncrement, setSession, addUnique, incrementCounter } from '../../../lib/analytics-storage'
+import { batchIncrement, setSession, addUnique, incrementCounter, getCounter, setCounter } from '../../../lib/analytics-storage'
 import { logger } from '../../../lib/logger'
 
 const MAX_BATCH_SIZE = 100
@@ -191,7 +191,14 @@ async function processBatchEvents(events) {
     for (const event of eventGroups.engagement) {
       const duration = event.properties?.duration || 0
       if (duration > 0) {
-        await incrementCounter('analytics:engagement:total_ms', duration * 1000)
+        // Duration from client is in seconds, convert to milliseconds
+        const durationMs = duration * 1000
+        
+        // Increment total engagement time by the duration
+        const currentTotal = await getCounter('analytics:engagement:total_ms')
+        await setCounter('analytics:engagement:total_ms', currentTotal + durationMs)
+        
+        // Increment engagement count
         await incrementCounter('analytics:engagement:count')
       }
     }

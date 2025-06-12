@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Engagement Tracking</title>
+</head>
+<body>
+    <h1>Engagement Time Test Page</h1>
+    <p>This page tests if engagement time is being tracked correctly.</p>
+    <p>Leave this page open for a few seconds, then close or navigate away.</p>
+    <div id="status"></div>
+    
+    <script type="module">
+        // Import the tracker
+        import { AnalyticsTrackerV2 } from './lib/analytics-tracker-v2.js';
+        
+        // Initialize tracker
+        window.analytics = new AnalyticsTrackerV2({
+            enableAutoTracking: true,
+            batchEndpoint: '/api/analytics/batch',
+            batchSize: 1, // Send immediately for testing
+            flushInterval: 1000 // Flush every second
+        });
+        
+        // Track page view
+        window.analytics.track('page_view', {
+            page: 'test-engagement',
+            title: 'Test Engagement Tracking'
+        });
+        
+        // Show status
+        const status = document.getElementById('status');
+        let secondsOpen = 0;
+        
+        setInterval(() => {
+            secondsOpen++;
+            status.innerHTML = `Page open for ${secondsOpen} seconds<br>Events in queue: ${window.analytics.eventQueue.length}`;
+        }, 1000);
+        
+        // Log when events are sent
+        const originalFetch = window.fetch;
+        window.fetch = function(...args) {
+            if (args[0] === '/api/analytics/batch') {
+                console.log('Sending analytics batch:', args[1]);
+            }
+            return originalFetch.apply(this, args);
+        };
+    </script>
+</body>
+</html>
