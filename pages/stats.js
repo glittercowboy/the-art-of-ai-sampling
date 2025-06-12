@@ -4,6 +4,7 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
+import EnhancedDashboard from '../components/EnhancedDashboard'
 
 export default function Dashboard({ authenticated = false }) {
   // Add pulse animation styles
@@ -83,15 +84,6 @@ export default function Dashboard({ authenticated = false }) {
     }
   }
 
-  const formatTime = (seconds) => {
-    const minutes = Math.floor(seconds / 60)
-    const remainingSeconds = seconds % 60
-    return `${minutes}m ${remainingSeconds}s`
-  }
-
-  const formatDate = (dateString) => {
-    return new Date(dateString).toLocaleString()
-  }
 
   if (!isAuthenticated) {
     return (
@@ -161,121 +153,7 @@ export default function Dashboard({ authenticated = false }) {
       <Head>
         <title>Analytics Dashboard</title>
       </Head>
-      <div data-testid="analytics-dashboard" className="mobile-responsive" style={styles.dashboard}>
-        <header style={styles.header}>
-          <h1>Analytics Dashboard</h1>
-          <p>Last updated: {formatDate(data.lastUpdated)}</p>
-          
-          {/* Connection Status Indicator */}
-          <div 
-            data-testid="connection-indicator"
-            className={data.connectionStatus?.connected ? 
-              (data.connectionStatus.type === 'redis' ? 'connected' : 'warning') : 
-              'error'
-            }
-            style={{
-              ...styles.connectionStatus,
-              backgroundColor: data.connectionStatus?.connected ? 
-                (data.connectionStatus.type === 'redis' ? '#4caf50' : '#ff9800') : 
-                '#f44336'
-            }}
-          >
-            <span style={styles.connectionDot}></span>
-            {data.connectionStatus?.connected ? (
-              data.connectionStatus.type === 'redis' ? 
-                'Connected to Redis' : 
-                <>
-                  Using In-Memory Storage
-                  <span style={styles.warningText}>Data will be lost on restart</span>
-                </>
-            ) : (
-              <>
-                Disconnected
-                {data.connectionStatus?.error && (
-                  <span style={styles.errorText}>{data.connectionStatus.error}</span>
-                )}
-              </>
-            )}
-          </div>
-        </header>
-
-        <div style={styles.metricsGrid}>
-          {/* Visitor Metrics */}
-          <div style={styles.card}>
-            <h2>Visitors</h2>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.visitors.total}</span>
-              <span style={styles.metricLabel}>Total Visitors</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.visitors.today}</span>
-              <span style={styles.metricLabel}>Today's Visitors</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.visitors.unique}</span>
-              <span style={styles.metricLabel}>Unique Visitors</span>
-            </div>
-          </div>
-
-          {/* Click Metrics */}
-          <div style={styles.card}>
-            <h2>Engagement</h2>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.clicks.total}</span>
-              <span style={styles.metricLabel}>Total Clicks</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.clicks.today}</span>
-              <span style={styles.metricLabel}>Today's Clicks</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.clicks.rate.toFixed(1)}%</span>
-              <span style={styles.metricLabel}>Click Rate</span>
-            </div>
-          </div>
-
-          {/* Conversion Metrics */}
-          <div style={styles.card}>
-            <h2>Conversions</h2>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.conversions.total}</span>
-              <span style={styles.metricLabel}>Conversions</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.conversions.rate.toFixed(1)}%</span>
-              <span style={styles.metricLabel}>Conversion Rate</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>${data.conversions.revenue}</span>
-              <span style={styles.metricLabel}>Revenue</span>
-            </div>
-          </div>
-
-          {/* Time & Scroll Metrics */}
-          <div style={styles.card}>
-            <h2>Behavior</h2>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{formatTime(data.averageTime)}</span>
-              <span style={styles.metricLabel}>Average Time on Page</span>
-            </div>
-            <div style={styles.metric}>
-              <span style={styles.metricValue}>{data.scrollDepth.average}%</span>
-              <span style={styles.metricLabel}>Average Scroll Depth</span>
-            </div>
-          </div>
-
-          {/* Scroll Depth Distribution */}
-          <div style={styles.card}>
-            <h2>Scroll Depth Distribution</h2>
-            {data.scrollDepth.distribution.map((item) => (
-              <div key={item.depth} style={styles.metric}>
-                <span style={styles.metricValue}>{item.count}</span>
-                <span style={styles.metricLabel}>{item.depth}% depth</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+      <EnhancedDashboard data={data} />
     </>
   )
 }
@@ -335,71 +213,5 @@ const styles = {
     justifyContent: 'center',
     alignItems: 'center',
     minHeight: '100vh',
-  },
-  dashboard: {
-    padding: '2rem',
-    backgroundColor: '#f0f0f0',
-    minHeight: '100vh',
-  },
-  header: {
-    marginBottom: '2rem',
-    textAlign: 'center',
-  },
-  metricsGrid: {
-    display: 'grid',
-    gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))',
-    gap: '1rem',
-  },
-  card: {
-    backgroundColor: 'white',
-    padding: '1.5rem',
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-  },
-  metric: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '0.5rem 0',
-    borderBottom: '1px solid #eee',
-  },
-  metricValue: {
-    fontSize: '1.5rem',
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  metricLabel: {
-    color: '#666',
-    fontSize: '0.9rem',
-  },
-  connectionStatus: {
-    display: 'inline-flex',
-    alignItems: 'center',
-    gap: '0.5rem',
-    padding: '0.5rem 1rem',
-    borderRadius: '20px',
-    color: 'white',
-    fontSize: '0.85rem',
-    fontWeight: '500',
-    marginTop: '1rem',
-  },
-  connectionDot: {
-    width: '8px',
-    height: '8px',
-    borderRadius: '50%',
-    backgroundColor: 'currentColor',
-    animation: 'pulse 2s infinite',
-  },
-  warningText: {
-    display: 'block',
-    fontSize: '0.75rem',
-    marginTop: '0.25rem',
-    opacity: 0.9,
-  },
-  errorText: {
-    display: 'block',
-    fontSize: '0.75rem',
-    marginTop: '0.25rem',
-    opacity: 0.9,
   },
 }

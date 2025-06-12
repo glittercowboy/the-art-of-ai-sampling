@@ -123,12 +123,46 @@ async function processBatchEvents(events) {
       counters['analytics:pageviews:total'] = eventGroups.pageviews.length
       counters[`analytics:pageviews:${today}`] = eventGroups.pageviews.length
       
-      // Track UTM campaigns
+      // Track traffic sources
       for (const event of eventGroups.pageviews) {
-        if (event.properties?.utm_campaign) {
-          const campaign = event.properties.utm_campaign
-          counters[`analytics:campaigns:${campaign}:views`] = 
-            (counters[`analytics:campaigns:${campaign}:views`] || 0) + 1
+        const props = event.properties || {}
+        
+        // Track UTM campaigns
+        if (props.utm_campaign) {
+          counters[`analytics:campaigns:${props.utm_campaign}:views`] = 
+            (counters[`analytics:campaigns:${props.utm_campaign}:views`] || 0) + 1
+        }
+        
+        // Track UTM sources
+        if (props.utm_source) {
+          counters[`analytics:sources:${props.utm_source}:views`] = 
+            (counters[`analytics:sources:${props.utm_source}:views`] || 0) + 1
+          counters[`analytics:sources:${props.utm_source}:${today}`] = 
+            (counters[`analytics:sources:${props.utm_source}:${today}`] || 0) + 1
+        }
+        
+        // Track referrers
+        if (props.referrer) {
+          try {
+            const referrerUrl = new URL(props.referrer)
+            const referrerDomain = referrerUrl.hostname.replace('www.', '')
+            
+            // Don't track self-referrals
+            if (!referrerDomain.includes('taches.ai')) {
+              counters[`analytics:referrers:${referrerDomain}:views`] = 
+                (counters[`analytics:referrers:${referrerDomain}:views`] || 0) + 1
+              counters[`analytics:referrers:${referrerDomain}:${today}`] = 
+                (counters[`analytics:referrers:${referrerDomain}:${today}`] || 0) + 1
+            }
+          } catch (e) {
+            // Invalid referrer URL, skip
+          }
+        } else if (!props.utm_source) {
+          // Direct traffic (no referrer, no UTM)
+          counters['analytics:sources:direct:views'] = 
+            (counters['analytics:sources:direct:views'] || 0) + 1
+          counters[`analytics:sources:direct:${today}`] = 
+            (counters[`analytics:sources:direct:${today}`] || 0) + 1
         }
       }
     }

@@ -4,51 +4,93 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Overview
 
-This repository contains a website for "The Art of AI Sampling with TÂCHES" - a landing page for a course about using AI tools for music production. 
+This repository contains "The Art of AI Sampling with TÂCHES" - a Next.js application for a course about using AI tools for music production. The application features integrated Stripe payment processing, Facebook CAPI tracking, and custom analytics.
 
-**Current State**: Static website built with vanilla HTML, CSS, and JavaScript
-**Target State**: Next.js application with integrated Stripe checkout and Facebook CAPI tracking
+**Current State**: Fully migrated Next.js application with:
+- Embedded Stripe checkout (no redirects)
+- Facebook Pixel + CAPI server-side tracking with event deduplication
+- GHL webhook integration for course fulfillment
+- Custom analytics system with visitor tracking and dashboard
 
-The main components are:
-- `index.html`: The single-page website structure
-- `styles.css`: All styling for the website
-- `script.js`: JavaScript for interactive elements (typing animation, FAQ accordion, etc.)
-- `/images/`: Directory containing all images used on the website
-- `plan.md`: Detailed implementation plan for Stripe integration project
+## Architecture Overview
 
-## Website Architecture
+### Frontend Structure
+- **Pages** (`/pages/`):
+  - `index.js` - Main landing page with course information
+  - `stats.js` - Analytics dashboard for tracking conversions
+  - `success.js` - Post-payment success page
+  
+### API Routes (`/pages/api/`)
+- **Payment Processing**:
+  - `create-payment-intent.js` - Creates Stripe payment intents
+  - `stripe-webhook.js` - Handles Stripe webhook events
+  
+- **Analytics** (`/pages/api/analytics/`):
+  - `track.js` - Single event tracking endpoint
+  - `batch.js` - Batch event processing for efficiency
+  
+- **Integration**:
+  - `ghl-lead.js` - GHL webhook for course fulfillment
+  - `stats.js` - Analytics data API endpoint
 
-The website follows a simple structure:
-- Header section with logo and introduction
-- Main content sections:
-  - Introduction with expandable "Read More" content
-  - Course overview with cards for different modules
-  - Information about the purpose of the course
-  - Pricing and enrollment section
-  - Notes about AI music quality
-  - FAQ section
+### Key Components (`/components/`)
+- `StripeCheckout.js` - Embedded payment form
+- `FacebookPixel.js` - Client-side pixel tracking
+- `CountdownTimer.js` - Enrollment timer
+- `EnhancedAnalyticsTracker.js` - Advanced event tracking
+- `EnhancedDashboard.js` - Analytics visualization
 
-## Development Workflow
+### Libraries (`/lib/`)
+- `stripe.js` - Stripe configuration and utilities
+- `facebook-capi.js` - Server-side Facebook tracking
+- `analytics.js` - Core analytics functions
+- `db.js` - Database connection (Upstash Redis)
 
-### Current Static Site (Pre-Migration)
+## Development Commands
 
-To view the current static website locally:
-```bash
-# Using Python's built-in HTTP server
-python -m http.server
-
-# OR using Node's http-server if installed
-npx http-server
-```
-
-Then open http://localhost:8000 in your browser.
-
-### Planned Next.js Application (Post-Migration)
-
-Once migrated to Next.js (see plan.md), development commands will be:
 ```bash
 # Install dependencies
 npm install
+
+# Run development server
+npm run dev
+
+# Run all tests
+npm test
+
+# Run tests in watch mode  
+npm test:watch
+
+# Run specific test file
+npm test -- path/to/test.js
+
+# Lint code
+npm run lint
+
+# Build for production
+npm run build
+
+# Start production server
+npm start
+```
+
+## Testing Strategy
+
+The project follows Test-Driven Development (TDD) with comprehensive test coverage:
+
+- **Test Directories**:
+  - `/tests/` - Integration tests for payment flows and webhooks
+  - `/__tests__/` - Unit tests for components and utilities
+  - `/pages/api/analytics/__tests__/` - API endpoint tests
+  - `/lib/__tests__/` - Library function tests
+
+- **Key Test Files**:
+  - `payment.test.js` - Payment flow integration tests
+  - `webhook.test.js` - Stripe webhook handling tests
+  - `analytics.test.js` - Analytics tracking tests
+  - `stats.test.js` - Statistics calculation tests
+
+### Stripe Testing
 
 # Run development server
 npm run dev

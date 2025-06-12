@@ -113,6 +113,9 @@ async function processAnalyticsData(rawData) {
 
     // Get timeline data (last 7 days)
     const timeline = await getTimelineData(7)
+    
+    // Get traffic sources data
+    const trafficSources = await getTrafficSources()
 
     const stats = {
       visitors: {
@@ -152,6 +155,7 @@ async function processAnalyticsData(rawData) {
         distribution: scrollDistribution
       },
       timeline,
+      trafficSources,
       lastUpdated: now.toISOString()
     }
 
@@ -193,4 +197,68 @@ async function getTimelineData(days = 7) {
   }
   
   return timeline
+}
+
+async function getTrafficSources() {
+  try {
+    // Get all source and referrer keys
+    const [sourceKeys, referrerKeys] = await Promise.all([
+      getKeysByPattern('analytics:sources:*:views'),
+      getKeysByPattern('analytics:referrers:*:views')
+    ])
+    
+    // Aggregate source data
+    const sources = []
+    
+    // Process UTM sources
+    for (const key of sourceKeys) {
+      const parts = key.split(':')
+      const source = parts[2]
+      if (source && source !== 'views') {
+        const views = await getCounter(key)
+        sources.push({
+          name: source,
+          type: source === 'direct' ? 'direct' : 'utm',
+          views
+        })
+      }
+    }
+    
+    // Process referrers
+    for (const key of referrerKeys) {
+      const parts = key.split(':')
+      const referrer = parts[2]
+      if (referrer && referrer !== 'views') {
+        const views = await getCounter(key)
+        sources.push({
+          name: referrer,
+          type: 'referrer',
+          views
+        })
+      }
+    }
+    
+    // Sort by views and limit to top 10
+    sources.sort((a, b) => b.views - a.views)
+    
+    // Calculate totals
+    const totalViews = sources.reduce((sum, source) => sum + source.views, 0)
+    
+    // Add percentages
+    const sourcesWithPercentage = sources.slice(0, 10).map(source => ({
+      ...source,
+      percentage: totalViews > 0 ? (source.views / totalViews) * 100 : 0
+    }))
+    
+    return {
+      sources: sourcesWithPercentage,
+      total: totalViews
+    }
+  } catch (error) {
+    console.error('Error getting traffic sources:', error)
+    return {
+      sources: [],
+      total: 0
+    }
+  }
 }
