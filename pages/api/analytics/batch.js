@@ -194,12 +194,43 @@ async function processBatchEvents(events) {
         // Duration from client is in seconds, convert to milliseconds
         const durationMs = duration * 1000
         
-        // Increment total engagement time by the duration
-        const currentTotal = await getCounter('analytics:engagement:total_ms')
-        await setCounter('analytics:engagement:total_ms', currentTotal + durationMs)
-        
-        // Increment engagement count
-        await incrementCounter('analytics:engagement:count')
+        if (event.properties?.incremental) {
+          // For incremental updates, store the max duration per session
+          const sessionKey = `analytics:session:engagement:${event.sessionId}`
+          const previousDuration = await getCounter(sessionKey) || 0
+          
+          if (durationMs > previousDuration) {
+            // Update session's max engagement time
+            await setCounter(sessionKey, durationMs)
+            
+            // Add the difference to the total
+            const difference = durationMs - previousDuration
+            const currentTotal = await getCounter('analytics:engagement:total_ms')
+            await setCounter('analytics:engagement:total_ms', currentTotal + difference)
+            
+            // Only increment count if this is a new session
+            if (previousDuration === 0) {
+              await incrementCounter('analytics:engagement:count')
+            }
+          }
+        } else {
+          // For final engagement time (on page unload)
+          const sessionKey = `analytics:session:engagement:${event.sessionId}`
+          const previousDuration = await getCounter(sessionKey) || 0
+          
+          // Only add if this duration is greater than what we've already recorded
+          if (durationMs > previousDuration) {
+            const difference = durationMs - previousDuration
+            const currentTotal = await getCounter('analytics:engagement:total_ms')
+            await setCounter('analytics:engagement:total_ms', currentTotal + difference)
+            await setCounter(sessionKey, durationMs)
+            
+            // Only increment count if this is a new session
+            if (previousDuration === 0) {
+              await incrementCounter('analytics:engagement:count')
+            }
+          }
+        }
       }
     }
 
