@@ -81,6 +81,7 @@ stripe listen --forward-to localhost:3000/api/stripe-webhook
 ## Development Memories
 
 - Don't try to run the server. I will run it with npm run dev myself
+- You must ALWAYS test and confirm tests pass before moving on to the next task.
 
 ## Design Guidelines
 

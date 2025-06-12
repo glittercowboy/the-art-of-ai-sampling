@@ -16,6 +16,7 @@ describe('/api/analytics/batch', () => {
     analyticsStorage.batchIncrement.mockResolvedValue(true)
     analyticsStorage.setSession.mockResolvedValue('OK')
     analyticsStorage.addUnique.mockResolvedValue(true)
+    analyticsStorage.incrementCounter.mockResolvedValue(1)
   })
 
   it('should process multiple events in one request', async () => {
@@ -100,10 +101,14 @@ describe('/api/analytics/batch', () => {
   })
 
   it('should handle partial batch failures', async () => {
-    // Make one storage call fail
-    analyticsStorage.batchIncrement
-      .mockResolvedValueOnce(true)
-      .mockRejectedValueOnce(new Error('Storage error'))
+    // Make batch increment fail, triggering individual processing
+    analyticsStorage.batchIncrement.mockRejectedValueOnce(new Error('Storage error'))
+    
+    // Then make individual increments work for first event, fail for second
+    analyticsStorage.incrementCounter
+      .mockResolvedValueOnce(1) // First event succeeds
+      .mockResolvedValueOnce(1)
+      .mockRejectedValueOnce(new Error('Individual storage error')) // Second event fails
 
     const { req, res } = createMocks({
       method: 'POST',
@@ -135,6 +140,8 @@ describe('/api/analytics/batch', () => {
     const response = JSON.parse(res._getData())
     expect(response.processed).toBe(1)
     expect(response.failed).toBe(1)
+    expect(response.errors).toHaveLength(1)
+    expect(response.errors[0].error).toContain('Individual storage error')
   })
 
   it('should reject non-POST requests', async () => {
