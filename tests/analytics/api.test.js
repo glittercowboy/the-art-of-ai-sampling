@@ -65,7 +65,7 @@ describe('/api/analytics/track', () => {
     
     expect(res._getStatusCode()).toBe(400)
     expect(JSON.parse(res._getData())).toEqual({
-      error: 'Invalid event_type. Must be one of: pageview, click, scroll, engagement'
+      error: 'Invalid event_type. Must be one of: pageview, click, scroll, engagement, lead_capture, checkout_form_shown, checkout_abandoned'
     })
   })
 

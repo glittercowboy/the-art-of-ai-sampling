@@ -40,6 +40,7 @@ export default function EnhancedDashboard({ data }) {
     leads: 0,
     checkouts: 0
   })
+  const [activeVisitors, setActiveVisitors] = useState(data.visitors?.active || 0)
 
   // Check for mobile viewport
   useEffect(() => {
@@ -78,6 +79,29 @@ export default function EnhancedDashboard({ data }) {
     
     return () => clearInterval(timer)
   }, [data])
+
+  // Update active visitors periodically
+  useEffect(() => {
+    const updateActiveVisitors = async () => {
+      try {
+        const response = await fetch('/api/analytics/active-visitors')
+        if (response.ok) {
+          const data = await response.json()
+          setActiveVisitors(data.count || 0)
+        }
+      } catch (error) {
+        console.error('Failed to update active visitors:', error)
+      }
+    }
+
+    // Update every 30 seconds
+    const timer = setInterval(updateActiveVisitors, 30000)
+    
+    // Also update immediately
+    updateActiveVisitors()
+    
+    return () => clearInterval(timer)
+  }, [])
 
   // Theme colors
   const theme = {
@@ -476,6 +500,53 @@ export default function EnhancedDashboard({ data }) {
         maxWidth: '1400px',
         margin: '0 auto'
       }}>
+        {/* Real-time Visitor Counter */}
+        <div style={{
+          backgroundColor: activeVisitors > 0 ? `${currentTheme.success}15` : currentTheme.cardBg,
+          border: `2px solid ${activeVisitors > 0 ? currentTheme.success : currentTheme.border}`,
+          borderRadius: '1rem',
+          padding: '1.5rem',
+          marginBottom: '2rem',
+          textAlign: 'center',
+          position: 'relative',
+          overflow: 'hidden'
+        }}>
+          <div style={{
+            position: 'absolute',
+            top: '50%',
+            right: '20px',
+            transform: 'translateY(-50%)',
+            width: '12px',
+            height: '12px',
+            backgroundColor: activeVisitors > 0 ? currentTheme.success : currentTheme.textSecondary,
+            borderRadius: '50%',
+            animation: activeVisitors > 0 ? 'pulse 2s infinite' : 'none'
+          }} />
+          <div style={{
+            fontSize: '0.875rem',
+            color: currentTheme.textSecondary,
+            marginBottom: '0.5rem',
+            fontWeight: '500'
+          }}>
+            🟢 Active Visitors Right Now
+          </div>
+          <div style={{
+            fontSize: '3rem',
+            fontWeight: '700',
+            color: activeVisitors > 0 ? currentTheme.success : currentTheme.text,
+            lineHeight: 1
+          }}>
+            {activeVisitors}
+          </div>
+          <div style={{
+            fontSize: '0.75rem',
+            color: currentTheme.textSecondary,
+            marginTop: '0.5rem'
+          }}>
+            {activeVisitors === 1 ? 'person browsing' : 'people browsing'}
+          </div>
+        </div>
+
         {/* Metrics Cards */}
         <div style={{
           display: 'grid',

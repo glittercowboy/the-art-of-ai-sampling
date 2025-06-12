@@ -40,15 +40,44 @@ export default async function handler(req, res) {
         currency: paymentIntent.currency.toUpperCase()
       }
 
-      // Send Facebook CAPI Purchase event (non-blocking)
+      // Extract user IP and user agent from request headers
+      const userIp = req.headers['x-forwarded-for']?.split(',')[0] || 
+                     req.headers['x-real-ip'] || 
+                     req.connection?.remoteAddress || 
+                     req.socket?.remoteAddress
+
+      // Try to get user agent from metadata first (more accurate), fallback to headers
+      const userAgent = paymentIntent.metadata.user_agent || req.headers['user-agent']
+
+      // Extract Facebook attribution data from metadata
+      const attributionData = {
+        fbclid: paymentIntent.metadata.fb_click_id || null,
+        fbp: paymentIntent.metadata.fb_browser_id || null,
+        fbc: paymentIntent.metadata.fb_click_cookie || null,
+        sourceUrl: paymentIntent.metadata.source_url || null,
+        userIp,
+        userAgent
+      }
+
+      logger.info('🔍 Processing purchase with attribution:', {
+        paymentId: paymentIntent.id,
+        hasClickId: !!attributionData.fbclid,
+        hasBrowserId: !!attributionData.fbp,
+        hasClickCookie: !!attributionData.fbc,
+        hasIp: !!userIp,
+        hasUserAgent: !!userAgent
+      })
+
+      // Send Facebook CAPI Purchase event with attribution data (non-blocking)
       try {
         await sendPurchaseEvent({
           email: customerData.email,
           paymentId: customerData.paymentId,
           value: customerData.amount,
-          currency: customerData.currency
+          currency: customerData.currency,
+          attribution: attributionData
         })
-        logger.info('Facebook CAPI Purchase event sent successfully')
+        logger.info('Facebook CAPI Purchase event sent successfully with attribution')
       } catch (fbError) {
         logger.error('Facebook CAPI error:', fbError.message)
         // Continue processing even if Facebook fails

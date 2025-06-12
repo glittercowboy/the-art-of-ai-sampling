@@ -9,7 +9,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const { email, name } = req.body
+  const { email, name, attribution } = req.body
 
   if (!email || !name) {
     return res.status(400).json({ error: 'Email and name are required' })
@@ -37,9 +37,26 @@ export default async function handler(req, res) {
           sale_type: pricing.sale.id,
           original_price: pricing.originalPrice.toString(),
           savings: pricing.savings.toString()
-        })
+        }),
+        // Add Facebook attribution data to metadata
+        ...(attribution?.fbclid && { fb_click_id: attribution.fbclid }),
+        ...(attribution?.fbp && { fb_browser_id: attribution.fbp }),
+        ...(attribution?.fbc && { fb_click_cookie: attribution.fbc }),
+        ...(attribution?.sourceUrl && { source_url: attribution.sourceUrl }),
+        ...(attribution?.userAgent && { user_agent: attribution.userAgent })
       }
     })
+
+    // Log attribution data for debugging
+    if (attribution && Object.keys(attribution).length > 0) {
+      console.log('📊 Facebook attribution data stored in payment intent:', {
+        paymentIntentId: paymentIntent.id,
+        hasClickId: !!attribution.fbclid,
+        hasBrowserId: !!attribution.fbp,
+        hasClickCookie: !!attribution.fbc,
+        sourceUrl: attribution.sourceUrl
+      })
+    }
 
     res.status(200).json({
       clientSecret: paymentIntent.client_secret,

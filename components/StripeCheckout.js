@@ -7,6 +7,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import CheckoutForm from './CheckoutForm'
 import { logger } from '../lib/logger'
 import { getCurrentPricing } from '../lib/sale-config'
+import { prepareAttributionPayload } from '../lib/facebook-attribution'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
 
@@ -73,10 +74,18 @@ export default function StripeCheckout({ isVisible, onClose }) {
         // Don't block checkout if GHL fails
       }
 
+      // Capture Facebook attribution data before creating payment intent
+      const attributionData = prepareAttributionPayload()
+      logger.dev('🎯 Attribution data captured for payment intent:', attributionData)
+
       const response = await fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, name }),
+        body: JSON.stringify({ 
+          email, 
+          name,
+          attribution: attributionData 
+        }),
       })
 
       const data = await response.json()

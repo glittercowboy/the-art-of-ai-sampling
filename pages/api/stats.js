@@ -116,13 +116,28 @@ async function processAnalyticsData(rawData) {
     
     // Get traffic sources data
     const trafficSources = await getTrafficSources()
+    
+    // Get active visitor count
+    let activeVisitors = 0
+    try {
+      const response = await fetch(`${process.env.VERCEL_URL ? 'https://' + process.env.VERCEL_URL : 'http://localhost:3000'}/api/analytics/active-visitors`)
+      if (response.ok) {
+        const data = await response.json()
+        activeVisitors = data.count || 0
+      }
+    } catch (error) {
+      // Fallback to direct count if internal API call fails
+      const activeKeys = await getKeysByPattern('analytics:active_visitors:*')
+      activeVisitors = activeKeys.length
+    }
 
     const stats = {
       visitors: {
         total: totalPageviews,
         today: todayPageviews,
         unique: uniqueVisitors,
-        uniqueToday: uniqueVisitorsToday
+        uniqueToday: uniqueVisitorsToday,
+        active: activeVisitors
       },
       clicks: {
         total: totalClicks,

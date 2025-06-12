@@ -122,19 +122,20 @@ export default function Home() {
     const initializeAnalytics = async () => {
       try {
         // Dynamically import the analytics tracker v2 (client-side only)
-        const AnalyticsTrackerV2 = (await import("../lib/analytics-tracker-v2")).default;
-        
+        const AnalyticsTrackerV2 = (await import("../lib/analytics-tracker-v2"))
+          .default;
+
         // Initialize with enhanced configuration
         window.analytics = new AnalyticsTrackerV2({
           enableAutoTracking: true,
-          batchEndpoint: '/api/analytics/batch',
+          batchEndpoint: "/api/analytics/batch",
           batchSize: 20,
           flushInterval: 5000,
           enableErrorTracking: true,
           enablePerformanceTracking: true,
-          debug: process.env.NODE_ENV === 'development'
+          debug: process.env.NODE_ENV === "development",
         });
-        
+
         logger.dev("✅ Enhanced analytics v2 initialized");
       } catch (error) {
         logger.devWarn("Analytics initialization failed:", error.message);
@@ -164,7 +165,7 @@ export default function Home() {
           action: "payment_form_open",
           value: pricing?.price || 97,
           price: pricing?.price || 97,
-          currency: "USD"
+          currency: "USD",
         });
         logger.dev("✅ Payment form open tracked");
       }
@@ -237,14 +238,14 @@ export default function Home() {
             style={{
               fontFamily: "'Poppins', sans-serif",
               fontSize: "clamp(1.2rem, 2.2vw, 1.5rem)",
-              fontWeight: "600",
+              fontWeight: "400",
               marginBottom: "1.5rem",
               textTransform: "uppercase",
-              letterSpacing: "0.2em",
+              letterSpacing: "0.05em",
               color: "#000000",
             }}
           >
-            TÂCHES PRESENTS:
+            TÂCHES (71M+ STREAMS) PRESENTS:
           </p>
           <h1
             style={{
@@ -290,7 +291,7 @@ export default function Home() {
               marginInline: "auto",
             }}
           />
-          <p
+          {/* <p
             style={{
               fontFamily: "'Poppins', sans-serif",
               fontSize: "clamp(1rem, 2vw, 1.3rem)",
@@ -305,6 +306,25 @@ export default function Home() {
           >
             LEARN TO USE AI TO EXPAND YOUR CREATIVITY -{" "}
             <span style={{ textDecoration: "underline" }}>NOT REPLACE IT</span>.
+          </p> */}
+
+          <p
+            style={{
+              fontFamily: "'Poppins', sans-serif",
+              fontSize: "clamp(1rem, 2vw, 1.3rem)",
+              fontWeight: "400",
+              marginTop: "0",
+              marginBottom: "2.5rem",
+              color: "#000000",
+              // textTransform: "uppercase",
+              maxWidth: "700px",
+              marginInline: "auto",
+              lineHeight: "1.3",
+            }}
+          >
+            Turn your musical ideas into reality with AI-powered
+            <br />
+            sampling techniques used by 500+ professional producers.
           </p>
 
           <button
@@ -326,7 +346,7 @@ export default function Home() {
                 "0 4px 15px rgba(230, 172, 85, 0.2), 0 2px 5px rgba(230, 172, 85, 0.15)",
             }}
           >
-            DISCOVER HOW →
+            START CREATING WITH A.I. →
           </button>
         </div>
       </header>
@@ -494,12 +514,14 @@ export default function Home() {
           <div className="event-header">
             <h2>THE ART OF A.I. SAMPLING</h2>
             <p className="event-description">
-              In this 6.5 hour course you&apos;ll learn how I combine cutting
-              edge AI tools with advanced music production techniques to make
-              high quality, emotionally resonant music. I&apos;ll be sharing my
-              innovative approach to using AI as an extension of (and not a
-              replacement for) your creativity to make music that feels
-              authentically you.
+              In this best-selling 6.5 hour course you&apos;ll learn how to
+              combine cutting edge AI tools with advanced music production
+              techniques to make high quality, emotionally resonant music.
+              <br />
+              <br />
+              You&apos;ll learn my innovative approach to using AI as an
+              extension of (and not a replacement for) your creativity to make
+              music that you could have only dreamed of creating without AI.
             </p>
           </div>
 
@@ -575,8 +597,8 @@ export default function Home() {
             </div>
           </div>
           <div className="register-button-container">
-            <button 
-              className="register-btn" 
+            <button
+              className="register-btn"
               onClick={handleRegisterClick}
               data-track
               data-track-action="hero_cta_click"
@@ -724,9 +746,9 @@ export default function Home() {
                   data-track-action="pricing_cta_click"
                   data-track-label="Enroll Now - Pricing Section"
                 >
-                  ENROLL NOW
+                  GET INSTANT ACCESS
                   <span className="cta-subtext">
-                    Instant access • Start learning today
+                    Master The Art of AI Sampling
                   </span>
                 </button>
                 <div className="guarantee-enhanced">
